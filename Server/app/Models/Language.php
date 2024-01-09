@@ -17,6 +17,9 @@ class Language extends Model
     ];
     public function projects(){
         return $this->belongsToMany(Project::class);
-     }
+    }
 
+    public function Fprojects(){
+        return $this->hasMany(Project::class,'from_language','id');
+    }
 }

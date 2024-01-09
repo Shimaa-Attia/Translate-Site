@@ -17,7 +17,7 @@ class testController extends Controller
         //     'file' => $request['file'] ,
         //     'ip_address' => $request->ip()
         // ];
-        $ip_address = $request->ip();
+        // $ip_address = $request->ip();
         //    return $ip_address;
 
         // $ip = '162.159.24.227'; /* Static IP address */
@@ -25,7 +25,7 @@ class testController extends Controller
 
         if ($position =  Location::get('ip_address')) {
             // Successfully retrieved position.
-            return $position;
+            // return $position;
             return response()->json([
                 'country'=>$position->countryName,
                 'city'=>$position->cityName

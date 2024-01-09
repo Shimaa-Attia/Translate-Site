@@ -14,7 +14,11 @@ class Project extends Model
         'name',
         'client_id',
         'country_id',
-        'field_id'
+        'field_id',
+        'status',
+        'from_language',
+        'numOfWords',
+        'price'
     ];
 
     public function country(){
@@ -34,5 +38,9 @@ class Project extends Model
     }
     public function languages(){
         return $this->belongsToMany(Language::class);
+    }
+
+     public function language(){
+        return $this->belongsTo(Language::class,'from_language','id');
      }
 }

@@ -65,7 +65,7 @@ class FieldController extends Controller
         //validation
         $validator = Validator::make($request->all(), [
             "name"=>'required|string|max:100|unique:fields,name,'.$field->id,
-            'price' => 'numeric|gt:0',
+            'price' => 'numeric|gte:0',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -84,18 +84,17 @@ class FieldController extends Controller
                 "message" => "$request->name topic has been updated & price has been set at  the default price",
                 'topic' => new FieldResource($field)
             ]);
-        }  elseif($request->price == $field->price){//update name only
-            $field->update([
-                "name" => $request->name,
-                "price" => $request->price
-
-            ]);
-            return response()->json([
-                "message" => "$request->name Topic has been updated",
-                'topic' => new FieldResource($field)
-            ]);
-
         }
+         $field->update([
+            "name" => $request->name,
+            "price" => $request->price
+
+         ]);
+        return response()->json([
+              "message" => "$request->name Topic has been updated",
+            'topic' => new FieldResource($field)
+         ]);
+
 
 
     }

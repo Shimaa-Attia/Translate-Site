@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ProjectResource;
 use App\Models\Client;
+use App\Models\Country;
 use App\Models\Field;
 use App\Models\File;
+use App\Models\Language;
 use App\Models\Language_project;
+use App\Models\Package;
+use App\Models\Price;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Stevebauman\Location\Facades\Location;
 
 class ProjectController extends Controller
 {
@@ -34,11 +39,24 @@ class ProjectController extends Controller
     }
     public function create(Request $request)
     {
+        if ($position =  Location::get('ip_address')) {
+            $county_name=$position->countryName;
+            $country = Country::where('name', $county_name)->first();
+             if($country==null){
+                return response()->json([
+                  "message"=>"Not allowed country"
+                ]);
+             }
+        }
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'feild_name' => 'required|exists:fields,name',
-            'languages.*'=>'required|exists:languages,id',
+            'from_language'=>'required|exists:languages,id',
+            'to_languages.*'=>'required|exists:languages,id',
             "attachments.*"=>'required|file|mimes:png,jpg,jpeg,gif,pdf,docx,xlsx',
+            'numOfWords'=>'required|integer|min:10',
+            // 'price'=>'requiresd|numeric|gte:0',
+            // 'status' => 'required|in:delivery,admin,doctor',
             "client_email"=>'email'
         ]);
 
@@ -47,29 +65,87 @@ class ProjectController extends Controller
                 "message" => $validator->errors()], 400);
         }
 
-        // dd($request->all());
+        $client = Client::where('email', $request->client_email)->first();
+        if($client==null){
+            $client=Client::create([
+            "name" => "undefined",
+            "email" => $request->client_email,
+            "country_id"=> $country->id
+            ]);
 
-        // return   json_encode( $request->all());
+        }else{
+            $client->update([
+                "country_id"=> $country->id
+            ]);
+        }
+        $field = Field::where('name', $request->feild_name)->first();
+        //calculte price
+        $price =0;
+
+        //num of words
+        $words100Price = Price::where('type','100Word')->first()->price;
+        $wordsUnite= ($request->numOfWords) /100;
+        $price+= $wordsUnite*$words100Price;
+
+        //field
+        if($field->price !=null){
+             $price+=$field->price;
+        }else{
+           $price += Price::where('type','field')->first()->price;
+        }
+
+        //country
+        if($country->price !=null){
+            $price+=$country->price;
+        }else{
+           $price += Price::where('type','field')->first()->price;
+        }
+
+        //from language
+        $from_language= Language::where('id',$request->from_language)->first();
+        if($from_language->price !=null){
+        $price+=$from_language->price;
+        }else{
+            $price += Price::where('type','language')->first()->price;
+        }
 
 
-        $client = Client::where('email', $request->client_email)->get();
-        $field = Field::where('name', $request->feild_name)->first('id');
 
+        //to languages
+        foreach($request->to_languages as $language_id){
+            $to_language= Language::where('id',$language_id)->first();
+            if($to_language->price !=null){
+                $price+=$to_language->price;
+                }else{
+                    $price += Price::where('type','language')->first()->price;
+                }
+        }
 
-        DB::transaction(function () use ($request,$client,$field) {
+       //packages
+       $packages = Package::all();
+       $offers=[];
+       foreach($packages as $package){
+          $packagePrice = $price + $price*($package->increasePercentage/100);
+          $offers[]=
+          [
+             'package'=>$package->name,
+             'price'=>$packagePrice
+          ];
+       }
+
+       return $offers;
+
+        DB::transaction(function () use ($request,$client,$field,$country,$price) {
 
             $project = Project::create([
                 "name" => $request->name,
-                "client_id" => $client[0]->id,
+                "client_id" => $client->id,
                 "field_id"=>$field->id,
-                "country_id"=>$client[0]->country_id
+                "numOfWords"=>$request->numOfWords,
+                "country_id"=>$country->id,
+                'from_language'=>$request->from_language,
+                "price"=>$price
             ]);
-                //  $path = public_path('storage/files');
-                    // $files =     $request->file('fiels');
-            //       foreach ($files as $file) {
-                        //  $newName = rand().'.'.$file->getClientOriginalExtention();
-                        //  $file->move($path,$newName)
-                //    }
 
             foreach($request->attachments as $attachment){
                 $newName = Storage::putFile("files",$attachment);
@@ -79,7 +155,7 @@ class ProjectController extends Controller
                     ]);
             }
 
-            foreach($request->languages as $language_id){
+            foreach($request->to_languages as $language_id){
                 Language_project::create([
                    'language_id'=>$language_id,
                    'project_id'=>$project->id
@@ -87,8 +163,10 @@ class ProjectController extends Controller
             }
 
         });
+
         return response()->json([
             "message" => "Project addedd..",
+            "price"=>$price
         ]);
 
     }

@@ -26,7 +26,7 @@ class LanguageController extends Controller
     }
     public function create(Request $request){
         $validator = Validator::make($request->all(), [
-            'name'=>'required|string|max:100',
+            'name'=>'required|string|max:100|unique:languages,name',
             'code'=>'string|max:10',
             'price' => 'numeric',
         ]);
@@ -58,37 +58,73 @@ class LanguageController extends Controller
                 "message" => "Language not found", 404
             ]);
         }
-        //validation
-        $validator = Validator::make($request->all(), [
-            'price' => 'numeric|gt:0',
+         //validation
+         $validator = Validator::make($request->all(), [
+            "name"=>'required|string|max:100|unique:countries,name,'.$language->id,
+            'code'=>'string|max:10',
+            'price' => 'numeric|gte:0',
         ]);
         if ($validator->fails()) {
             return response()->json([
                 "message" => $validator->errors()
-                , 409]);
+                ], 409);
         }
-
-        if($request->price >0 ){
-            //update
-            $language->update([
-                "price" => $request->price,
-
-            ]);
-             //response
-            return response()->json([
-                "message" => "The price for $language->name has been set at $$request->price",
-            ]);
-        }elseif (empty($request->price)) {
+        if (empty($request->price)) {
             //update to default
-            $language->update([
+             $language->update([
                 "price" =>null,
-
+                "code"=> $request->code,
+                "name" => $request->name,
             ]);
              //response
              return response()->json([
-                "message" => "The price for $language->name has been set at  the default price",
+                "message" => "$request->name  has been updated & price has been set at  the default price",
+                'language' =>$language
             ]);
         }
+        $language->update([
+            "name" => $request->name,
+            "code"=> $request->code,
+            "price" => $request->price
+
+        ]);
+        return response()->json([
+             "message" => "$request->name  has been updated",
+            'language' =>$language
+        ]);
+
+
+        // //validation
+        // $validator = Validator::make($request->all(), [
+        //     'price' => 'numeric|gt:0',
+        // ]);
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         "message" => $validator->errors()
+        //         , 409]);
+        // }
+
+        // if($request->price >0 ){
+        //     //update
+        //     $language->update([
+        //         "price" => $request->price,
+
+        //     ]);
+        //      //response
+        //     return response()->json([
+        //         "message" => "The price for $language->name has been set at $$request->price",
+        //     ]);
+        // }elseif (empty($request->price)) {
+        //     //update to default
+        //     $language->update([
+        //         "price" =>null,
+
+        //     ]);
+        //      //response
+        //      return response()->json([
+        //         "message" => "The price for $language->name has been set at  the default price",
+        //     ]);
+        // }
 
     }
 

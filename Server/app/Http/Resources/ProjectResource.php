@@ -19,7 +19,7 @@ class ProjectResource extends JsonResource
         foreach($files as $file){
          $customForm[]=[
              'id'=>$file->id,
-              'name'=>$file->name,
+             'name'=>$file->name,
              'file'=>asset('storage')."/". $file->name
          ];
        }
@@ -29,9 +29,12 @@ class ProjectResource extends JsonResource
            'field'=>$this->field,
            'client'=>$this->client,
            'country'=>$this->country,
-           'fiels'=> $customForm,
-            'to_languages'=>$this->languages
-            
+           'numOfWords'=>$this->numOfWords,
+           'price'=>$this->price,
+           'attachments'=> $customForm,
+           'status'=>$this->status,
+           'from_language'=>$this->language,
+           'to_languages'=>$this->languages
         ];
     }
 }

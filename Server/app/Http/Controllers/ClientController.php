@@ -6,8 +6,10 @@ use App\Http\Resources\ClientResource;
 use App\Models\Client;
 use App\Models\Country;
 use GuzzleHttp\Promise\Create;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Stevebauman\Location\Facades\Location;
 
 class ClientController extends Controller
 {
@@ -32,24 +34,35 @@ class ClientController extends Controller
 
     public function create(Request $request)
     {
+        if ($position =  Location::get('ip_address')) {
+            $county_name=$position->countryName;
+            $country = Country::where('name', $county_name)->first();
+             if($country==null){
+                return response()->json([
+                  "message"=>"Not allowed country"
+                ]);
+             }
+        }
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             "phones" => 'nullable|min:11|regex:/^01[0125][0-9]{8}$/|max:11|unique:clients,phone',
-            "email"=>'required|email|unique:clients,email',
-            'country_name' => 'required|exists:countries,name'
+            "email"=>'required|email',
+            // 'country_name' => 'required|exists:countries,name' //
         ]);
         if ($validator->fails()) {
             return response()->json([
                 "message" => $validator->errors(),409]);
         }
 
+        $client= Client::where('email',$request->email)->first();
+        if($client == null ){
+            return response()->json([
+              'message'=>"Please enter the same email you used when uploading files"
+            ]);
+        }
 
-        $country = Country::where('name', $request->country_name)->first('id');
-        // return $country->id;
-
-        $client = Client::create([
+        $client->update([
             "name" => $request->name,
-            "email" => $request->email,
             "phone" => $request->phone,
             "country_id" => $country->id
         ]);
@@ -70,9 +83,9 @@ class ClientController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            "phones" => 'nullable|min:11|regex:/^01[0125][0-9]{8}$/|max:11|unique:clients,phone',
-            "email"=>'required|email|unique:clients,email',
-            'country_name' => 'required|exists:countries,id'
+            "phones" => 'nullable|min:11|regex:/^01[0125][0-9]{8}$/|max:11|unique:clients,phone'.$id,
+            "email"=>'required|email|unique:clients,email'.$id,
+            'country_name' => 'required|exists:countries,name'
         ]);
         if ($validator->fails()) {
             return response()->json([

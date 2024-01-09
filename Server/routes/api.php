@@ -4,6 +4,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\ProjectController;
@@ -175,6 +176,27 @@ Route::group(['prefix'=>'projects','as'=>'projects.'],function(){
     Route::delete('/deleteArchive/{id}',[ProjectController::class,'deleteArchive']);
      //search
      Route::get('/search/{key}',[ProjectController::class,'search']);
+
+
+
+});
+
+Route::group(['prefix'=>'packages','as'=>'packages.'],function(){
+    //select all
+    Route::get('/',[PackageController::class,'all']);
+    //show
+    Route::get('/show/{id}',[PackageController::class,'show']);
+    //create
+    Route::post('/',[PackageController::class,'create']);
+    //update
+    Route::put('/{id}',[PackageController::class,'update']);
+    // soft delete
+    Route::delete('/delete/{id}',[PackageController::class,'destroy']);
+    Route::get('/archive',[PackageController::class,'archive']);
+    Route::post('/restore/{id}',[PackageController::class,'restore']);
+    Route::delete('/deleteArchive/{id}',[PackageController::class,'deleteArchive']);
+     //search
+     Route::get('/search/{key}',[PackageController::class,'search']);
 
 
 
