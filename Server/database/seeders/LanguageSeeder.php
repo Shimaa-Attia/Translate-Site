@@ -152,7 +152,7 @@ class LanguageSeeder extends Seeder
 
          ];
 
-         foreach ($languages as $key => $value) {
+         foreach ($languages as $value) {
             Language::create($value);
         }
     }

@@ -74,6 +74,8 @@ Route::group(['prefix'=>'countries','as'=>'countries.'],function(){
     Route::get('/',[CountryController::class,'all']);
     //select one
     Route::get('/show/{id}',[CountryController::class,'show']);
+    //create
+    Route::post('/',[CountryController::class,'create']);
     //update
     Route::put('/{id}',[CountryController::class,'update']);
     //soft delete
@@ -89,6 +91,8 @@ Route::group(['prefix'=>'languages','as'=>'languages.'],function(){
     Route::get('/',[LanguageController::class,'all']);
     //select one
     Route::get('/show/{id}',[LanguageController::class,'show']);
+    //create
+    Route::post('/',[LanguageController::class,'create']);
     //update
     Route::put('/{id}',[LanguageController::class,'update']);
     //soft delete
