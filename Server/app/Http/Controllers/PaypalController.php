@@ -26,13 +26,13 @@ class PaypalController extends Controller
 
         $data['invoice_id'] = 1;
         $data['invoice_description']="Order #{$data['invoice_id']} Invoice";
-        $data['return_url']='http://127.0.0.1:8080/payment/success';
-        $data['cancel_url']='http://127.0.0.1:8080/cancel';
+        $data['return_url']='http://127.0.0.1:8000/payment/success';
+        $data['cancel_url']='http://127.0.0.1:8000/cancel';
         $data['total']=1700;
 
         $provider = new ExpressCheckout();
         // $provider = PayPal::setProvider('express_checkout');      // To use express checkout(used by default).
-
+        //check if old project payment
         $response = $provider->setExpressCheckout($data, true);
         // dd($response);
         return redirect($response['paypal_link']);

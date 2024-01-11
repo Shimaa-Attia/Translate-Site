@@ -32,11 +32,12 @@ class FieldController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "name"=>'required|string|max:100|unique:fields,name',
-            'price' => 'required|numeric|gt:0',
+            'price' => 'numeric|gt:0|nullable',
         ]);
         if ($validator->fails()) {
             return response()->json([
-                "message" => $validator->errors(),409]);
+             "message" => $validator->errors()
+            ],409);
         }
 
         //create
@@ -65,7 +66,7 @@ class FieldController extends Controller
         //validation
         $validator = Validator::make($request->all(), [
             "name"=>'required|string|max:100|unique:fields,name,'.$field->id,
-            'price' => 'numeric|gte:0',
+            'price' => 'numeric|gt:0|nullable',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -73,27 +74,24 @@ class FieldController extends Controller
         }
 
         //update
-      if (empty($request->price)) {
-            //update to default
-             $field->update([
-                "price" =>null,
-                "name" => $request->name,
-            ]);
-             //response
-             return response()->json([
-                "message" => "$request->name topic has been updated & price has been set at  the default price",
-                'topic' => new FieldResource($field)
-            ]);
-        }
-         $field->update([
+        $field->update([
             "name" => $request->name,
             "price" => $request->price
 
-         ]);
+        ]);
+
+        if (empty($request->price)) {
+            //response
+            return response()->json([
+                "message" => "$request->name topic has been updated & price has been set at  the default price",
+                'topic' => new FieldResource($field)
+            ]);
+         }
+
         return response()->json([
-              "message" => "$request->name Topic has been updated",
+            "message" => "$request->name Topic has been updated",
             'topic' => new FieldResource($field)
-         ]);
+        ]);
 
 
 

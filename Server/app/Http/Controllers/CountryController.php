@@ -14,6 +14,8 @@ class CountryController extends Controller
         $countries = Country::all();
         return $countries;
     }
+
+
     public function show($id)
     {
         $country = Country::find($id);
@@ -23,13 +25,14 @@ class CountryController extends Controller
             ], 404);
         }
         return $country;
-
     }
-     public function create(Request $request){
+
+
+    public function create(Request $request){
         $validator = Validator::make($request->all(), [
             'name'=>'required|string|max:100|unique:countries,name',
-            'code'=>'string|max:10',
-            'price' => 'numeric',
+            'code'=>'string|max:10|nullable',
+            'price' => 'numeric|nullable|gt:0',
         ]);
 
         if ($validator->fails()) {
@@ -63,67 +66,34 @@ class CountryController extends Controller
         //validation
         $validator = Validator::make($request->all(), [
             "name"=>'required|string|max:100|unique:countries,name,'.$country->id,
-            'code'=>'string|max:10',
-            'price' => 'numeric|gte:0',
+            'code'=>'string|max:10|nullable',
+            'price' => 'numeric|gt:0|nullable',
         ]);
         if ($validator->fails()) {
             return response()->json([
                 "message" => $validator->errors()
             ], 409);
         }
+
+        //update
+        $country->update([
+            "name" => $request->name,
+            "code"=> $request->code,
+            "price" => $request->price
+
+        ]);
+
+        //response
         if (empty($request->price)) {
-            //update to default
-             $country->update([
-                "price" =>null,
-                "code"=>$request->code,
-                "name" => $request->name,
-            ]);
-             //response
             return response()->json([
-                "message" => "$request->name country has been updated & price has been set at  the default price",
+                "message" => "$request->name  has been updated & price has been set at  the default price",
                 'country' =>$country
             ]);
         }
-        $country->update([
-             "name" => $request->name,
-             "code"=>$request->code,
-             "price" => $request->price
-
-        ]);
         return response()->json([
-             "message" => "$request->name country has been updated",
-        'country' =>$country
+             "message" => "$request->name  has been updated",
+            'country' =>$country
         ]);
-
-
-        // if($request->price >0 ){
-        //     //update
-        //     $country->update([
-        //         "price" => $request->price,
-
-        //     ]);
-        //      //response
-        //     return response()->json([
-        //         "message" => "The price for $country->name has been set at $$request->price",
-        //     ]);
-        // }elseif (empty($request->price)) {
-        //     //update
-        //     $country->update([
-        //         "price" =>null,
-
-        //     ]);
-        //      //response
-        //      return response()->json([
-        //         "message" => "The price for $country->name has been set at  the default price",
-        //     ]);
-
-        // }else{
-        //       //response
-        //       return response()->json([
-        //         "message" => "enter a positive value",
-        //     ]);
-        // }
-
 
     }
 

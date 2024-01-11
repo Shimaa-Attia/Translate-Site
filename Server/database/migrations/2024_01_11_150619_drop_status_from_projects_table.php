@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->enum('sctatus',array('Not ordered','Ordered.','being translated','Completed'))->default('Not ordered');
-            $table->bigInteger('from_language',false,true)->nullable();
-            $table->foreign('from_language')->references('id')->on('languages')->onDelete('SET NULL')->onUpdate('CASCADE');
+            $table->dropColumn('status');
         });
     }
 
@@ -24,7 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            //
+            $table->enum('status',array('Not ordered','Ordered'))->default('Not ordered');
+
         });
     }
 };
