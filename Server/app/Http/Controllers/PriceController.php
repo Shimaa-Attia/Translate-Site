@@ -27,29 +27,29 @@ class PriceController extends Controller
 
     }
 
-    public function create(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            "type"=>'required|string|max:100|unique:prices,type',
-            'price' => 'required|numeric|gt:0',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                "message" => $validator->errors()],409);
-        }
+    // public function create(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         "type"=>'required|string|max:100|unique:prices,type',
+    //         'price' => 'required|numeric|gt:0',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             "message" => $validator->errors()],409);
+    //     }
 
-        //create
-        $price = Price::create([
-            "type" => $request->type,
-            "price" => $request->price,
-        ]);
+    //     //create
+    //     $price = Price::create([
+    //         "type" => $request->type,
+    //         "price" => $request->price,
+    //     ]);
 
-        return response()->json([
-            "message" => "defualt price has been added ",
-            'price' => $price
-        ]);
+    //     return response()->json([
+    //         "message" => "defualt price has been added ",
+    //         'price' => $price
+    //     ]);
 
-    }
+    // }
 
     public function update(Request $request, $id)
     {
@@ -63,7 +63,7 @@ class PriceController extends Controller
         }
         //validation
         $validator = Validator::make($request->all(), [
-            "type"=>'required|string|max:100|unique:prices,type,'.$price->id,
+            // "type"=>'required|string|max:100|unique:prices,type,'.$price->id,
             'price' => 'numeric|gt:0',
         ]);
         if ($validator->fails()) {
@@ -74,7 +74,7 @@ class PriceController extends Controller
         //update
 
             $price->update([
-                "type" => $request->type,
+                // "type" => $request->type,
                 "price" => $request->price
 
             ]);

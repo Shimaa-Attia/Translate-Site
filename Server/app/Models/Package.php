@@ -11,6 +11,9 @@ class Package extends Model
     use HasFactory; use SoftDeletes;
     protected $fillable=[
        'name',
-       'increasePercentage'
+       'increasePercentage',
+       'description',
+       'word_unite',
+       'expected_numOfDays'
     ];
 }

@@ -39,6 +39,8 @@ class ProjectController extends Controller
     }
     public function create(Request $request)
     {
+        // return date('Y-m-d H:i:s',time()+ (5 * 60 * 60));//,
+
         if ($position =  Location::get('ip_address')) {
             $county_name=$position->countryName;
             $country = Country::where('name', $county_name)->first();
@@ -55,9 +57,8 @@ class ProjectController extends Controller
             'to_languages.*'=>'required|exists:languages,id',
             "attachments.*"=>'required|file|mimes:png,jpg,jpeg,gif,pdf,docx,xlsx',
             'numOfWords'=>'required|integer|min:10',
-            // 'price'=>'requiresd|numeric|gte:0',
-            // 'status' => 'required|in:delivery,admin,doctor',
-            "client_email"=>'email'
+            "client_email"=>'email|required',
+            "need_Faster"=>'nullable|date_format:Y-m-d H:i:s|after:' . date(DATE_ATOM, time() + (5 * 60 * 60))
         ]);
 
         if ($validator->fails()) {
@@ -126,10 +127,19 @@ class ProjectController extends Controller
        $offers=[];
        foreach($packages as $package){
           $packagePrice = $price + $price*($package->increasePercentage/100);
+          $num_of_wordUnite= ($request->numOfWords) / ($package->word_unite);
+        //   return $num_of_wordUnite;
+        //   return $package->word_unite;
+          $numOfDays= $num_of_wordUnite * $package->expected_numOfDays;
+        //   return  $numOfDays;
+        $daysInSecondes=$numOfDays*24*60*60;
+        // return $daysInSecondes;
+        $time=date("Y-m-d H:i:s", time() + $daysInSecondes);
           $offers[]=
           [
-             'package'=>$package->name,
-             'price'=>$packagePrice
+            'package'=>$package->name,
+            'price'=>"$$packagePrice",
+            'excepectedTime'=>$time
           ];
        }
 
@@ -144,7 +154,7 @@ class ProjectController extends Controller
                 "numOfWords"=>$request->numOfWords,
                 "country_id"=>$country->id,
                 'from_language'=>$request->from_language,
-                "price"=>$price
+                // "price"=>$price
             ]);
 
             foreach($request->attachments as $attachment){
@@ -165,8 +175,8 @@ class ProjectController extends Controller
         });
 
         return response()->json([
-            "message" => "Project addedd..",
-            "price"=>$price
+            "message" => "Project added..",
+            "offers"=>$offers
         ]);
 
     }

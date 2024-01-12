@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('packages', function (Blueprint $table) {
-            // description - wordsUnite - expected time
-            $table->text('description');
+            
+            $table->text('description')->nullable();
             $table->integer('word_unite');
-            $table->decimal('expected_num_day');
+            $table->decimal('expected_numOfDays',5,2);
         });
     }
 
