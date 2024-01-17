@@ -1,10 +1,9 @@
 
-
-export default function Login() {
+export default function AdminHome() {
   return (
-    <div>
-      <label htmlFor="email">Email</label>
-      <input type="text"  className="" name="" id="" />
-    </div>
-  )
+ <>
+<h2>admin home</h2>
+
+ </>
+  );
 }
