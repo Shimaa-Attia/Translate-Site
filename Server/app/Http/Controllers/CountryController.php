@@ -49,7 +49,7 @@ class CountryController extends Controller
         ]);
 
         return response()->json([
-          "message"=>"country added..",
+          "message"=>"country has been added ",
           "country"=>$country
         ]);
     }

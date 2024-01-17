@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\CustomFieldController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\PackageController;
@@ -64,9 +65,7 @@ Route::middleware(['auth:api'])->group(function(){});
     Route::post('/forgotPassword',[UserController::class,'forgotPassword']);
     //resetPassword
     Route::post('/resetPassword',[UserController::class,'resetPassword']);
-    });
-
-
+});
 
 
 Route::group(['prefix'=>'countries','as'=>'countries.'],function(){
@@ -86,6 +85,7 @@ Route::group(['prefix'=>'countries','as'=>'countries.'],function(){
      //search
     Route::get('/search/{key}',[CountryController::class,'search']);
 });
+
 Route::group(['prefix'=>'languages','as'=>'languages.'],function(){
     //select all
     Route::get('/',[LanguageController::class,'all']);
@@ -103,6 +103,7 @@ Route::group(['prefix'=>'languages','as'=>'languages.'],function(){
      //search
     Route::get('/search/{key}',[LanguageController::class,'search']);
 });
+
 Route::group(['prefix'=>'fields','as'=>'fields.'],function(){
     //select all
     Route::get('/',[FieldController::class,'all']);
@@ -157,29 +158,31 @@ Route::group(['prefix'=>'clients','as'=>'clients.'],function(){
     Route::get('/archive',[ClientController::class,'archive']);
     Route::post('/restore/{id}',[ClientController::class,'restore']);
     Route::delete('/deleteArchive/{id}',[ClientController::class,'deleteArchive']);
-     // search
+    // search
      Route::get('/search/{key}',[ClientController::class,'search']);
 
 
 
-});
+    });
 
-Route::group(['prefix'=>'projects','as'=>'projects.'],function(){
-    //select all
-    Route::get('/',[ProjectController::class,'all']);
-    //show
-    Route::get('/show/{id}',[ProjectController::class,'show']);
-    //create
-    Route::post('/',[ProjectController::class,'create']);
-    //update
-    Route::put('/{id}',[ProjectController::class,'update']);
-    // soft delete
-    Route::delete('/delete/{id}',[ProjectController::class,'destroy']);
-    Route::get('/archive',[ProjectController::class,'archive']);
-    Route::post('/restore/{id}',[ProjectController::class,'restore']);
-    Route::delete('/deleteArchive/{id}',[ProjectController::class,'deleteArchive']);
-     //search
-     Route::get('/search/{key}',[ProjectController::class,'search']);
+    Route::group(['prefix'=>'projects','as'=>'projects.'],function(){
+        //select all
+        Route::get('/',[ProjectController::class,'all']);
+        //show
+        Route::get('/show/{id}',[ProjectController::class,'show']);
+        //create
+        Route::post('/',[ProjectController::class,'create']);
+        //update
+        Route::put('/{id}',[ProjectController::class,'update']);
+        // soft delete
+        Route::delete('/delete/{id}',[ProjectController::class,'destroy']);
+        Route::get('/archive',[ProjectController::class,'archive']);
+        Route::post('/restore/{id}',[ProjectController::class,'restore']);
+        Route::delete('/deleteArchive/{id}',[ProjectController::class,'deleteArchive']);
+        //search
+        Route::get('/search/{key}',[ProjectController::class,'search']);
+        //update status
+        Route::post('/updateStatus/{id}',[ProjectController::class,'updateStatus']);
 
 
 
@@ -203,5 +206,22 @@ Route::group(['prefix'=>'packages','as'=>'packages.'],function(){
      Route::get('/search/{key}',[PackageController::class,'search']);
 
 
+
+});
+
+Route::group(['prefix'=>'customFields','as'=>'customFields.'],function(){
+    //getCustomList
+    Route::get('/getCustomList/{type}',[CustomFieldController::class,'getCustomList']);
+    //select one
+    Route::get('/show/{id}',[CustomFieldController::class,'show']);
+     //create
+     Route::post('/{type}',[CustomFieldController::class,'create']);
+    //update
+    Route::put('{/{id}',[CustomFieldController::class,'update']);
+    //soft delete
+    Route::delete('/delete/{id}',[CustomFieldController::class,'destroy']);
+    Route::get('{type}/archive/',[CustomFieldController::class,'archive']);
+    Route::post('/restore/{id}',[CustomFieldController::class,'restore']);
+    Route::delete('/deleteArchive/{id}',[CustomFieldController::class,'deleteArchive']);
 
 });

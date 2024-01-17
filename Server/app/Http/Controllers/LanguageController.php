@@ -44,7 +44,7 @@ class LanguageController extends Controller
         ]);
 
         return response()->json([
-          "message"=>"language added..",
+          "message"=>"language has been added ",
           "language"=>$language
         ]);
     }

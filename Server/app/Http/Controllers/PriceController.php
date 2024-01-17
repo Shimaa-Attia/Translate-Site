@@ -80,7 +80,7 @@ class PriceController extends Controller
             ]);
             return response()->json([
                 "message" => "hte default price for $request->type has been updated",
-                'field' => $price
+                'new_price' => $price
             ]);
 
 

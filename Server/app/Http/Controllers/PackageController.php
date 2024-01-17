@@ -48,7 +48,7 @@ class PackageController extends Controller
         ]);
 
         return response()->json([
-          "message"=>"Package added..",
+          "message"=>"Package has been added ",
           "package"=> $package
         ]);
     }
@@ -66,9 +66,8 @@ class PackageController extends Controller
         $validator = Validator::make($request->all(), [
             'name'=>'required|string|max:100|unique:packages,name,'.$id,
             'increasePercentage'=> 'numeric|required',
-            "description"=>$request->description,
-            "word_unite"=>$request->word_unite,
-            "expected_numOfDays"=>$request->expected_numOfDays
+            'word_unite'=>'numeric|required',
+            'expected_numOfDays'=>'numeric|required'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -88,7 +87,7 @@ class PackageController extends Controller
             ]);
              //response
             return response()->json([
-                "message" => "$package->name package updated.."
+                "message" => "$package->name package has been updated "
 
             ]);
 

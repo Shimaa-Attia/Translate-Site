@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ProjectResource;
 use App\Models\Client;
 use App\Models\Country;
+use App\Models\CustomField;
 use App\Models\Field;
 use App\Models\File;
 use App\Models\Language;
@@ -175,7 +176,7 @@ class ProjectController extends Controller
         });
 
         return response()->json([
-            "message" => "Project added..",
+            "message" => "Project has been added ",
             "offers"=>$offers
         ]);
 
@@ -210,12 +211,44 @@ class ProjectController extends Controller
         ]);
 
         return response()->json([
-            "message" => "Project updated..",
+            "message" => "Project has been updated ",
         ]);
 
 
     }
 
+    public function updateStatus(Request $request, $id){
+        //check
+      $project = Project::find($id);
+      if ($project == null) {
+          return response()->json([
+              "message" => "project not found"
+          ], 404);
+      }
+      //validation
+      $validator = Validator::make($request->all(), [
+         'status_id'=>'required|exists:custom_fields,id'
+      ]);
+      if ($validator->fails()) {
+          return response()->json([
+              "message" => $validator->errors()
+              ],409);
+      }
+      $status = CustomField::where('id',$request->status_id)->first();
+      if($status->type!="status" ){
+          return response()->json([
+               "message" => "Choose a vaild status"
+          ], 409);
+      }
+
+      $status->update([
+         "status_id"=>$request->status_id,
+      ]);
+
+      return response()->json([
+          "message" => "status of $project->name project has been updated ",
+      ]);
+  }
     public function destroy($id)
     {
         $project = Project::find($id);
@@ -226,7 +259,7 @@ class ProjectController extends Controller
         }
         $project->delete();
         return response()->json([
-            "message" => "Project archived"
+            "message" => "Project has been archived"
         ], 200);
     }
 
@@ -245,12 +278,12 @@ class ProjectController extends Controller
         $project = Project::onlyTrashed()->find($id);
         if ($project == null) {
             return response()->json([
-                "message" => "Project not fpumd in archive"
+                "message" => "Project not found in archive"
             ], 404);
         }
         $project->restore();
         return response()->json([
-            "message" => "Project restored",
+            "message" => "Project has been restored",
             "project" => new ProjectResource($project)
         ], 200);
     }
@@ -265,7 +298,7 @@ class ProjectController extends Controller
         }
         $project->forceDelete();
         return response()->json([
-            "message" => "Project deleted"
+            "message" => "Project has been deleted"
         ], 200);
     }
 

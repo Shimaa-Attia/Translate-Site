@@ -56,7 +56,7 @@ class UserController extends Controller
 
 
         if (!auth()->attempt($request->only('email', 'password'))) {
-            return response(['message' => 'credentials not correct, try again..']);
+            return response(['message' => 'credentials not correct, try again ']);
         }
 
 
@@ -144,7 +144,7 @@ class UserController extends Controller
         ]);
         //response
         return response()->json([
-            "message" => "Your data has been updated successfully", "new data " => $user
+            "message" => "Your data has been updated successfully", "new_data " => $user
         ], 200);
 
 
@@ -240,7 +240,7 @@ class UserController extends Controller
             'password'=>$new_hashed_password
            ]);
           return response()->json([
-            "message"=>"pasword changed.."
+            "message"=>"Pasword has been changed "
           ]);
         }
 
@@ -327,7 +327,7 @@ class UserController extends Controller
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
        return response()->json([
-         "message"=>"pasword reseted, please try to login.."
+         "message"=>"pasword has been reseted, please try to login "
        ]);
     }
 }

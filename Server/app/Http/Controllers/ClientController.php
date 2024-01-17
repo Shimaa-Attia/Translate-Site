@@ -67,7 +67,7 @@ class ClientController extends Controller
             "country_id" => $country->id
         ]);
 
-        return response("added..");
+        return response("your data has been saved, Please continue to pay ");
 
     }
 
@@ -105,7 +105,7 @@ class ClientController extends Controller
         ]);
         //response
         return response()->json([
-            "message" => "updated..", "client " => $client
+            "message" => "Client data has been updated ", "client " => $client
         ], 200);
 
 
@@ -122,7 +122,7 @@ class ClientController extends Controller
         }
         $client->delete();
         return response()->json([
-            "message" => "Client Archived.."], 200);
+            "message" => "Client has been Archived "], 200);
     }
 
 
@@ -148,7 +148,7 @@ class ClientController extends Controller
         }
         $client->restore();
         return response()->json([
-                "message" => "restored..",
+                "message" => "Client has been restored ",
                 "client" => new ClientResource($client)]
             , 200);
     }
@@ -163,7 +163,7 @@ class ClientController extends Controller
         }
         $client->forceDelete();
         return response()->json([
-            "message" => "deleted.."], 200);
+            "message" => "Client has been deleted "], 200);
     }
 
     public function search($key)

@@ -8,19 +8,14 @@ use Srmklive\PayPal\Services\ExpressCheckout;
 class PaypalController extends Controller
 {
     public function payment(){
+
         $data=[];
         $data['items']=[
             [
-              'name'=>'file 1',
-              "numOfWords"=>586,
-              "field"=>'medical',
-              "price"=>1000
-            ],
-            [
-              'name'=>'file 2',
-              "numOfWords"=>465,
-              "field"=>'global',
-              "price"=>700
+                'name'=>'file 2',
+                "numOfWords"=>465,
+                "field"=>'global',
+                "price"=>1200
             ]
         ];
 
@@ -28,9 +23,17 @@ class PaypalController extends Controller
         $data['invoice_description']="Order #{$data['invoice_id']} Invoice";
         $data['return_url']='http://127.0.0.1:8000/payment/success';
         $data['cancel_url']='http://127.0.0.1:8000/cancel';
-        $data['total']=1700;
+        $total = 0;
+        foreach($data['items'] as $item) {
+            $total += $item['price'];
+        }
+        $data['total']=$total;
 
         $provider = new ExpressCheckout();
+           $options = [
+            'BRANDNAME' => 'translated website',
+        ];
+        $provider->addOptions($options)->setExpressCheckout($data);
         // $provider = PayPal::setProvider('express_checkout');      // To use express checkout(used by default).
         //check if old project payment
         $response = $provider->setExpressCheckout($data, true);
@@ -48,13 +51,41 @@ class PaypalController extends Controller
 
     public function success(Request $request){
         $provider = new ExpressCheckout();
+        // $data=[];
+        // $data['items']=[
+        //     [
+        //         'name'=>'file 2',
+        //         "numOfWords"=>465,
+        //         "field"=>'global',
+        //         "price"=>1200
+        //     ]
+        // ];
+
+        // $data['invoice_id'] = 1;
+        // $data['invoice_description']="Order #{$data['invoice_id']} Invoice";
+        // $data['return_url']='http://127.0.0.1:8000/payment/success';
+        // $data['cancel_url']='http://127.0.0.1:8000/cancel';
+        // $total = 0;
+        // foreach($data['items'] as $item) {
+        //     $total += $item['price'];
+        // }
+        // $data['total']=$total;
+
+        // $provider = new ExpressCheckout();
+        //    $options = [
+        //     'BRANDNAME' => 'translated website',
+        // ];
+        // $provider->addOptions($options)->setExpressCheckout($data);
         $response =$provider->getExpressCheckoutDetails($request->token);
         if (in_array(strtoupper($response['ACK']), ['SUCCESS', 'SUCCESSWITHWARNING'])) {
             //نخزن عملية الدفع في الداتا بيز هنا لو عايزين
-            return response()->json('Payment was successfull. The payment success page goes here!');
+            // return response()->json('Payment was successfull. The payment success page goes here!');
+            // $response = $provider->doExpressCheckoutPayment($data, $request->token, $request->PayerID);
+            // return $response;
+            $response = $provider->getTransactionDetails($request->token);
+            return $response;
         }
-                //نمسحها من الداتا بيز لو خزنتها  (عملية الدفع يعني)
-
+        //نمسحها من الداتا بيز لو خزنتها  (عملية الدفع يعني)
         return response()->json(
             'fail payment', 402
         );
