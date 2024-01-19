@@ -16,4 +16,8 @@ class Package extends Model
        'word_unite',
        'expected_numOfDays'
     ];
+
+    public function projects(){
+        return $this->hasMany(Project::class);
+    }
 }

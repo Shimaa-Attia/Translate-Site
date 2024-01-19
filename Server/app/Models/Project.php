@@ -18,7 +18,9 @@ class Project extends Model
         'status',
         'from_language',
         'numOfWords',
-        'price'
+        'price',
+        'notes',
+        'package_id'
     ];
 
     public function country(){
@@ -33,14 +35,17 @@ class Project extends Model
 
     public function fiels(){
      return  $this->hasMany(File::class);
-
-
     }
     public function languages(){
         return $this->belongsToMany(Language::class);
     }
 
-     public function language(){
+    public function language(){
         return $this->belongsTo(Language::class,'from_language','id');
-     }
+    }
+
+    public function package(){
+        return $this->belongsTo(Package::class);
+    }
+
 }

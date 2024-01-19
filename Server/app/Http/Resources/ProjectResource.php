@@ -26,10 +26,13 @@ class ProjectResource extends JsonResource
         return [
            'id'=>$this->id,
            'name'=>$this->name,
+           'notes'=>$this->notes,
+           'created_at'=> $this->created_at->format('Y/m/d h:i A'),
            'field'=>$this->field,
            'client'=>$this->client,
            'country'=>$this->country,
            'numOfWords'=>$this->numOfWords,
+           'package'=>$this->package,
            'price'=>$this->price,
            'attachments'=> $customForm,
            'status'=>$this->status,

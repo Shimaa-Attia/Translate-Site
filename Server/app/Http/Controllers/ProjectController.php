@@ -52,7 +52,6 @@ class ProjectController extends Controller
              }
         }
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
             'feild_name' => 'required|exists:fields,name',
             'from_language'=>'required|exists:languages,id',
             'to_languages.*'=>'required|exists:languages,id',
@@ -135,19 +134,20 @@ class ProjectController extends Controller
         //   return  $numOfDays;
         $daysInSecondes=$numOfDays*24*60*60;
         // return $daysInSecondes;
-        $time=date("Y-m-d H:i:s", time() + $daysInSecondes);
+        $date=date("Y-m-d H:i A", time() + $daysInSecondes);
           $offers[]=
           [
-            'package'=>$package,
-            'price'=>"$$packagePrice",
-            'excepectedTime'=>$time
+            'package_id'=>$package->id,
+            'package_name'=>$package->name,
+            'package_desc'=>$package->description,
+            'price'=>"$packagePrice",
+            'excepectedDelveryDate'=>$date
           ];
        }
 
         // DB::transaction(function () use ($request,$client,$field,$country) {
 
            $project = Project::create([
-                "name" => $request->name,
                 "client_id" => $client->id,
                 "field_id"=>$field->id,
                 "numOfWords"=>$request->numOfWords,
@@ -193,7 +193,6 @@ class ProjectController extends Controller
         // });
 
         return response()->json([
-            "message" => "Project has been added ",
             "project_id"=>$project->id,
             "packages"=>$offers
         ]);
