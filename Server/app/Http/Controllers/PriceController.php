@@ -64,7 +64,7 @@ class PriceController extends Controller
         //validation
         $validator = Validator::make($request->all(), [
             // "type"=>'required|string|max:100|unique:prices,type,'.$price->id,
-            'price' => 'numeric|gt:0',
+            'price' => 'required|numeric|gt:0',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -79,7 +79,7 @@ class PriceController extends Controller
 
             ]);
             return response()->json([
-                "message" => "hte default price for $request->type has been updated",
+                "message" => "the default price for $request->type has been updated",
                 'new_price' => $price
             ]);
 
@@ -89,56 +89,56 @@ class PriceController extends Controller
     }
 
 
-    public function destroy($id)
-    {
-        $price = Price::find($id);
-        if ($price == null) {
-            return response()->json([
-                "message" => "not found"
-            ], 404);
-        }
-        $price->delete();
-        return response()->json([
-            "message" => "default price for $price->type has been archived"], 200);
-    }
+    // public function destroy($id)
+    // {
+    //     $price = Price::find($id);
+    //     if ($price == null) {
+    //         return response()->json([
+    //             "message" => "not found"
+    //         ], 404);
+    //     }
+    //     $price->delete();
+    //     return response()->json([
+    //         "message" => "default price for $price->type has been archived"], 200);
+    // }
 
 
-    public function archive()
-    {
+    // public function archive()
+    // {
 
-        $prices = Price::onlyTrashed()->get();
+    //     $prices = Price::onlyTrashed()->get();
 
-        return $prices;
+    //     return $prices;
 
-    }
+    // }
 
-    public function restore($id)
-    {
-        $price = Price::onlyTrashed()->find($id);
-        if ($price == null) {
-            return response()->json([
-                "message" => "not found in archive"
-            ], 404);
-        }
-        $price->restore();
-        return response()->json([
-                "message" => "default price for $price->type has been restored",
-                "price" => $price]
-            , 200);
-    }
+    // public function restore($id)
+    // {
+    //     $price = Price::onlyTrashed()->find($id);
+    //     if ($price == null) {
+    //         return response()->json([
+    //             "message" => "not found in archive"
+    //         ], 404);
+    //     }
+    //     $price->restore();
+    //     return response()->json([
+    //             "message" => "default price for $price->type has been restored",
+    //             "price" => $price]
+    //         , 200);
+    // }
 
-    public function deleteArchive($id)
-    {
-        $price = Price::onlyTrashed()->find($id);
-        if ($price == null) {
-            return response()->json([
-                "message" => "not found in archive"
-            ], 404);
-        }
-        $price->forceDelete();
-        return response()->json([
-            "message" => "default price for $price->type has been deleted"], 200);
-    }
+    // public function deleteArchive($id)
+    // {
+    //     $price = Price::onlyTrashed()->find($id);
+    //     if ($price == null) {
+    //         return response()->json([
+    //             "message" => "not found in archive"
+    //         ], 404);
+    //     }
+    //     $price->forceDelete();
+    //     return response()->json([
+    //         "message" => "default price for $price->type has been deleted"], 200);
+    // }
 
     public function search($key)
     {

@@ -59,7 +59,7 @@ class ProjectController extends Controller
             "attachments.*"=>'required|file|mimes:png,jpg,jpeg,gif,pdf,docx,xlsx',
             'numOfWords'=>'required|integer|min:10',
             "client_email"=>'email|required',
-            "need_Faster"=>'nullable|date_format:Y-m-d H:i:s|after:' . date(DATE_ATOM, time() + (5 * 60 * 60))
+            //"need_Faster"=>'nullable|date_format:Y-m-d H:i:s|after:' . date(DATE_ATOM, time() + (5 * 60 * 60))
         ]);
 
         if ($validator->fails()) {
@@ -177,6 +177,7 @@ class ProjectController extends Controller
 
         return response()->json([
             "message" => "Project has been added ",
+            //project_id
             "offers"=>$offers
         ]);
 
