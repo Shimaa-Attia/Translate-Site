@@ -1,7 +1,10 @@
+import QuoteForm from "@/components/quote/QuoteForm";
 
 
 export default function Quote() {
   return (
-    <div>quote page</div>
+<>
+<QuoteForm/>
+</>
   )
 }

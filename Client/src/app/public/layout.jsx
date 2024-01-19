@@ -13,7 +13,7 @@ export const metadata = {
 export default function PublicLayout({ children }) {
     return (
     <>
-        <div className={inter.className}>
+        <div className={inter.className }>
                 <Navbar/>
                 {children}
             </div>

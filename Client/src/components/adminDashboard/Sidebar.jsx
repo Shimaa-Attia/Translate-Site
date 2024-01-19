@@ -16,7 +16,7 @@ export default function Sidebar() {
                                 <div className={pathName == '/admin' ? 'text-white rounded-lg bg-gray-700' : ''}>
                                     <div className='flex items-center p-2 rounded-lg  hover:bg-gray-700 hover:text-white '>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                                         </svg>
                                         <span className="flex-1 ms-3 whitespace-nowrap">Home</span>
                                     </div>
@@ -42,7 +42,7 @@ export default function Sidebar() {
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                         </svg>
-                                        <span className="flex-1 ms-3 whitespace-nowrap">Prices</span>
+                                        <span className="flex-1 ms-3 whitespace-nowrap">Default Prices</span>
                                     </div>
                                 </div>
                             </Link>
@@ -73,34 +73,46 @@ export default function Sidebar() {
                         </li>
                         <li>
                             <Link href='/admin/languages'>
-                            <div className={pathName == '/admin/languages' ? 'text-white rounded-lg bg-gray-700' : ''}>
-                                <div className="flex items-center p-2  rounded-lg   hover:bg-gray-700 hover:text-white ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 0 1-3.827-5.802" />
-                                    </svg>
+                                <div className={pathName == '/admin/languages' ? 'text-white rounded-lg bg-gray-700' : ''}>
+                                    <div className="flex items-center p-2  rounded-lg   hover:bg-gray-700 hover:text-white ">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 0 1-3.827-5.802" />
+                                        </svg>
 
-                                    <span className="flex-1 ms-3 whitespace-nowrap">Languages</span>
+                                        <span className="flex-1 ms-3 whitespace-nowrap">Languages</span>
+                                    </div>
                                 </div>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href='/admin/packages'>
+                                <div className={pathName == '/admin/packages' ? 'text-white rounded-lg bg-gray-700' : ''}>
+                                    <div className="flex items-center p-2  rounded-lg   hover:bg-gray-700 hover:text-white ">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m0-3-3-3m0 0-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5a2.25 2.25 0 0 1-2.25-2.25v-.75" />
+                                        </svg>
+                                        <span className="flex-1 ms-3 whitespace-nowrap">Packages</span>
+                                    </div>
                                 </div>
                             </Link>
                         </li>
                         <li>
                             <Link href='/admin/topics'>
-                            <div className={pathName == '/admin/topics' ? 'text-white rounded-lg bg-gray-700' : ''}>
-                                <div className="flex items-center p-2  rounded-lg   hover:bg-gray-700 hover:text-white ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                    </svg>
+                                <div className={pathName == '/admin/topics' ? 'text-white rounded-lg bg-gray-700' : ''}>
+                                    <div className="flex items-center p-2  rounded-lg   hover:bg-gray-700 hover:text-white ">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                        </svg>
 
-                                    <span className="flex-1 ms-3 whitespace-nowrap">Topics</span>
-                                </div>
+                                        <span className="flex-1 ms-3 whitespace-nowrap">Topics</span>
+                                    </div>
                                 </div>
                             </Link>
                         </li>
                     </ul>
                 </div>
             </aside>
-       
+
         </>
     )
 }
