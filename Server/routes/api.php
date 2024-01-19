@@ -129,15 +129,9 @@ Route::group(['prefix'=>'prices','as'=>'prices.'],function(){
     Route::get('/',[PriceController::class,'all']);
     //show
     Route::get('/show/{id}',[PriceController::class,'show']);
-    //create
-    Route::post('/',[PriceController::class,'create']);
     //update
     Route::put('/{id}',[PriceController::class,'update']);
-    //price soft
-    Route::delete('/delete/{id}',[PriceController::class,'destroy']);
-    Route::get('/archive',[PriceController::class,'archive']);
-    Route::post('/restore/{id}',[PriceController::class,'restore']);
-    Route::delete('/deleteArchive/{id}',[PriceController::class,'deleteArchive']);
+
      //search
      Route::get('/search/{key}',[PriceController::class,'search']);
 
@@ -159,11 +153,9 @@ Route::group(['prefix'=>'clients','as'=>'clients.'],function(){
     Route::post('/restore/{id}',[ClientController::class,'restore']);
     Route::delete('/deleteArchive/{id}',[ClientController::class,'deleteArchive']);
     // search
-     Route::get('/search/{key}',[ClientController::class,'search']);
+    Route::get('/search/{key}',[ClientController::class,'search']);
 
-
-
-    });
+});
 
     Route::group(['prefix'=>'projects','as'=>'projects.'],function(){
         //select all

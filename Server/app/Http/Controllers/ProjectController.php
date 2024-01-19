@@ -138,49 +138,72 @@ class ProjectController extends Controller
         $time=date("Y-m-d H:i:s", time() + $daysInSecondes);
           $offers[]=
           [
-            'package'=>$package->name,
+            'package'=>$package,
             'price'=>"$$packagePrice",
             'excepectedTime'=>$time
           ];
        }
 
-       return $offers;
+        // DB::transaction(function () use ($request,$client,$field,$country) {
 
-        DB::transaction(function () use ($request,$client,$field,$country,$price) {
-
-            $project = Project::create([
+           $project = Project::create([
                 "name" => $request->name,
                 "client_id" => $client->id,
                 "field_id"=>$field->id,
                 "numOfWords"=>$request->numOfWords,
                 "country_id"=>$country->id,
                 'from_language'=>$request->from_language,
-                // "price"=>$price
-            ]);
 
-            foreach($request->attachments as $attachment){
-                $newName = Storage::putFile("files",$attachment);
-                File::create([
+            ]);
+            if($project){
+
+                foreach($request->attachments as $attachment){
+                    $newName = Storage::putFile("files",$attachment);
+                    $file= File::create([
                         "name" => $newName,
                         "project_id" => $project->id
                     ]);
+                    if(!$file){
+                        $project->forceDelete();
+                        return response()->json([
+                            "message"=>"Something went wrong.."
+                        ]);
+                    }
+                }
+
+                foreach($request->to_languages as $language_id){
+                    $language=  Language_project::create([
+                        'language_id'=>$language_id,
+                        'project_id'=>$project->id
+                    ]);
+                    if(!$language){
+                        $project->forceDelete();
+                        return response()->json([
+                          "message"=>"Something went wrong.."
+                        ]);
+                    }
+
+                }
+            }else{
+                return response()->json([
+                    "message"=>"Something went wrong.."
+                  ]);
             }
 
-            foreach($request->to_languages as $language_id){
-                Language_project::create([
-                   'language_id'=>$language_id,
-                   'project_id'=>$project->id
-                ]);
-            }
-
-        });
+        // });
 
         return response()->json([
             "message" => "Project has been added ",
-            //project_id
-            "offers"=>$offers
+            "project_id"=>$project->id,
+            "packages"=>$offers
         ]);
 
+    }
+
+    public function FasterDeliveryDate(Request $request){
+        $validator = Validator::make($request->all(), [
+            "need_Faster"=>'required|date_format:Y-m-d H:i:s|after:' . date(DATE_ATOM, time() + (5 * 60 * 60))
+        ]);
     }
 
     public function update(Request $request, $id)
