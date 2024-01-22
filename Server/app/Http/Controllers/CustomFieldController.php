@@ -30,6 +30,7 @@ class CustomFieldController extends Controller
 
         return new CustomFieldResource($customField);
     }
+    
     public function create(Request $request , $type){
         $validator = Validator::make($request->all(),[
             'name'=>"required|string"
