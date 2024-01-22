@@ -14,7 +14,7 @@ class ProjectResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-       $files= $this->fiels;
+       $files= $this->files;
         $customForm=[];
         foreach($files as $file){
          $customForm[]=[
@@ -23,9 +23,17 @@ class ProjectResource extends JsonResource
              'file'=>asset('storage')."/". $file->name
          ];
        }
+       $is_orderd="no";
+       $payments=$this->payments;
+       foreach($payments as $payment){
+        if($payment->token !=null & $payment->PayerID !=null){
+            $is_orderd="yes";
+        }
+       }
         return [
            'id'=>$this->id,
            'name'=>$this->name,
+           'is_orderd'=>$is_orderd,
            'notes'=>$this->notes,
            'created_at'=> $this->created_at->format('Y/m/d h:i A'),
            'field'=>$this->field,
@@ -34,10 +42,12 @@ class ProjectResource extends JsonResource
            'numOfWords'=>$this->numOfWords,
            'package'=>$this->package,
            'price'=>$this->price,
+           'selectedDeliveryDate'=> optional($this->selectedDeliveryDate)->format('Y/m/d h:i A') ,
            'attachments'=> $customForm,
-           'status'=>$this->status,
+           'status'=>optional($this->status)->name,
            'from_language'=>$this->language,
-           'to_languages'=>$this->languages
+           'to_languages'=>$this->languages,
+           'review'=>$this->review
         ];
     }
 }

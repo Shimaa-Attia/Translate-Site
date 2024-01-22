@@ -154,30 +154,34 @@ Route::group(['prefix'=>'clients','as'=>'clients.'],function(){
     Route::delete('/deleteArchive/{id}',[ClientController::class,'deleteArchive']);
     // search
     Route::get('/search/{key}',[ClientController::class,'search']);
-
+    //my projects
+    Route::post('/myProjects',[ClientController::class,'myProjects']);
 });
 
-    Route::group(['prefix'=>'projects','as'=>'projects.'],function(){
-        //select all
-        Route::get('/',[ProjectController::class,'all']);
-        //show
-        Route::get('/show/{id}',[ProjectController::class,'show']);
-        //create
-        Route::post('/',[ProjectController::class,'create']);
-        //update
-        Route::put('/{id}',[ProjectController::class,'update']);
-        // soft delete
-        Route::delete('/delete/{id}',[ProjectController::class,'destroy']);
-        Route::get('/archive',[ProjectController::class,'archive']);
-        Route::post('/restore/{id}',[ProjectController::class,'restore']);
-        Route::delete('/deleteArchive/{id}',[ProjectController::class,'deleteArchive']);
-        //search
-        Route::get('/search/{key}',[ProjectController::class,'search']);
-        //update status
-        Route::post('/updateStatus/{id}',[ProjectController::class,'updateStatus']);
-
-
-
+Route::group(['prefix'=>'projects','as'=>'projects.'],function(){
+    //select all
+    Route::get('/',[ProjectController::class,'all']);
+    //show
+    Route::get('/show/{id}',[ProjectController::class,'show']);
+    //create
+    Route::post('/',[ProjectController::class,'create']);
+    //update
+    Route::put('/{id}',[ProjectController::class,'update']);
+    // soft delete
+    Route::delete('/delete/{id}',[ProjectController::class,'destroy']);
+    Route::get('/archive',[ProjectController::class,'archive']);
+    Route::post('/restore/{id}',[ProjectController::class,'restore']);
+    Route::delete('/deleteArchive/{id}',[ProjectController::class,'deleteArchive']);
+    //search
+    Route::get('/search/{key}',[ProjectController::class,'search']);
+    //update status
+    Route::put('/updateStatus/{id}',[ProjectController::class,'updateStatus']);
+    //setReview
+    Route::put('/setReview/{id}',[ProjectController::class,'setReview']);
+    //FasterDeliveryDate
+    Route::post('/FasterDeliveryDate',[ProjectController::class,'FasterDeliveryDate']);
+    //completeInfo
+    Route::post('/completeInfo',[ProjectController::class,'completeInfo']);
 });
 
 Route::group(['prefix'=>'packages','as'=>'packages.'],function(){

@@ -21,7 +21,7 @@ class Client extends Model
         return $this->belongsTo(Country::class); // belongs to one country
      }
 
-     public function projects(){
+    public function projects(){
         return $this->hasMany(Project::class);
     }
 

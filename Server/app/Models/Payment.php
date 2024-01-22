@@ -6,15 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CustomField extends Model
+class Payment extends Model
 {
     use HasFactory; use SoftDeletes;
     protected $fillable=[
-        'type',
-        'name'
+        'project_id',
+        'token',
+        'amount',
+        'PayerID'
     ];
-    public function projects(){
-        return $this->hasMany(Project::class,'status_id','id');
+    public function project(){
+        return $this->belongsTo(Project::class);
     }
-
 }

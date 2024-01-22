@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ClientResource;
+use App\Http\Resources\ProjectResource;
 use App\Models\Client;
 use App\Models\Country;
 use GuzzleHttp\Promise\Create;
@@ -58,7 +59,7 @@ class ClientController extends Controller
         if($client == null ){
             return response()->json([
               'message'=>"Please enter the same email you used when uploading files"
-            ]);
+            ],409);
         }
 
         $client->update([
@@ -67,7 +68,9 @@ class ClientController extends Controller
             "country_id" => $country->id
         ]);
 
-        return response("your data has been saved, Please continue to pay ");
+        return response()->json([
+            'message'=>"your data has been saved, Please continue to pay"
+          ]);
 
     }
 
@@ -177,6 +180,25 @@ class ClientController extends Controller
             ->orderBy('created_at', 'DESC')->get();
         return ClientResource::collection($clients);
 
+    }
+
+    public function myProjects(Request $request){
+        $validator = Validator::make($request->all(), [
+            'email'=>'required|email'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                "message" => $validator->errors()
+                ],409);
+        }
+        $client= Client::where('email',$request->email)->first();
+        if($client == null ){
+            return response()->json([
+              'message'=>"Wrong email"
+            ],409);
+        }
+        $projects = $client->projects;
+        return ProjectResource::collection($projects);
     }
 
 }

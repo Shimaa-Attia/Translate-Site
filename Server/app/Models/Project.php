@@ -10,17 +10,22 @@ class Project extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    protected $casts = [
+        'selectedDeliveryDate' => 'datetime'
+    ];
     protected $fillable = [
         'name',
         'client_id',
         'country_id',
         'field_id',
-        'status',
+        'status_id',
         'from_language',
         'numOfWords',
         'price',
         'notes',
-        'package_id'
+        'package_id',
+        'selectedDeliveryDate',
+        'review'
     ];
 
     public function country(){
@@ -33,7 +38,7 @@ class Project extends Model
         return $this->belongsTo(Field::class);
     }
 
-    public function fiels(){
+    public function files(){
      return  $this->hasMany(File::class);
     }
     public function languages(){
@@ -47,5 +52,11 @@ class Project extends Model
     public function package(){
         return $this->belongsTo(Package::class);
     }
+    public function payments(){
+        return $this->hasMany(Payment::class);
+    }
 
+    public function status(){
+        return $this->belongsTo(CustomField::class,'status_id','id');
+    }
 }

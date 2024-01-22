@@ -13,6 +13,8 @@ use App\Models\Language_project;
 use App\Models\Package;
 use App\Models\Price;
 use App\Models\Project;
+use DateTime;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -41,7 +43,7 @@ class ProjectController extends Controller
     public function create(Request $request)
     {
         // return date('Y-m-d H:i:s',time()+ (5 * 60 * 60));//,
-
+        //$position->timezone;
         if ($position =  Location::get('ip_address')) {
             $county_name=$position->countryName;
             $country = Country::where('name', $county_name)->first();
@@ -54,7 +56,9 @@ class ProjectController extends Controller
         $validator = Validator::make($request->all(), [
             'feild_name' => 'required|exists:fields,name',
             'from_language'=>'required|exists:languages,id',
+            'to_languages'=>'required|array|min:1',
             'to_languages.*'=>'required|exists:languages,id',
+            'attachments'=>'required|array|min:1',
             "attachments.*"=>'required|file|mimes:png,jpg,jpeg,gif,pdf,docx,xlsx',
             'numOfWords'=>'required|integer|min:10',
             "client_email"=>'email|required',
@@ -117,9 +121,9 @@ class ProjectController extends Controller
             $to_language= Language::where('id',$language_id)->first();
             if($to_language->price !=null){
                 $price+=$to_language->price;
-                }else{
-                    $price += Price::where('type','language')->first()->price;
-                }
+            }else{
+                $price += Price::where('type','language')->first()->price;
+            }
         }
 
        //packages
@@ -134,14 +138,14 @@ class ProjectController extends Controller
         //   return  $numOfDays;
         $daysInSecondes=$numOfDays*24*60*60;
         // return $daysInSecondes;
-        $date=date("Y-m-d H:i A", time() + $daysInSecondes);
+        $date=date("Y-m-d h:i A", time() + $daysInSecondes);
           $offers[]=
           [
             'package_id'=>$package->id,
             'package_name'=>$package->name,
             'package_desc'=>$package->description,
             'price'=>"$packagePrice",
-            'excepectedDelveryDate'=>$date
+            'deliveryDate'=>$date
           ];
        }
 
@@ -153,6 +157,7 @@ class ProjectController extends Controller
                 "numOfWords"=>$request->numOfWords,
                 "country_id"=>$country->id,
                 'from_language'=>$request->from_language,
+                'name'=>"undefined"
 
             ]);
             if($project){
@@ -167,7 +172,7 @@ class ProjectController extends Controller
                         $project->forceDelete();
                         return response()->json([
                             "message"=>"Something went wrong.."
-                        ]);
+                        ],409);
                     }
                 }
 
@@ -180,14 +185,14 @@ class ProjectController extends Controller
                         $project->forceDelete();
                         return response()->json([
                           "message"=>"Something went wrong.."
-                        ]);
+                        ], 409);
                     }
 
                 }
             }else{
                 return response()->json([
                     "message"=>"Something went wrong.."
-                  ]);
+                  ],409);
             }
 
         // });
@@ -200,11 +205,82 @@ class ProjectController extends Controller
     }
 
     public function FasterDeliveryDate(Request $request){
-        $validator = Validator::make($request->all(), [
-            "need_Faster"=>'required|date_format:Y-m-d H:i:s|after:' . date(DATE_ATOM, time() + (5 * 60 * 60))
-        ]);
-    }
+        $validator = Validator::make($request->all(), [  //|date_format:Y-m-d H:i A
+            "DateFaster"=>'required|after:' . date(DATE_ATOM, time() + (5 * 60 * 60)),
+            'deliveryDate'=>'required|after:DateFaster' ,
+            "package_id"=>'required|exists:packages,id',
+            "project_id"=>'required|exists:projects,id',
+            'price'=>'required|numeric',
 
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                "message" => $validator->errors()
+            ], 409);
+        }
+
+        $deliveryDate = new DateTime($request->deliveryDate);
+        $DateFaster = new DateTime($request->DateFaster);
+        $interval = $deliveryDate->diff($DateFaster);
+        $hours=$interval->h + ($interval->i)/60;
+        $days = $interval->d + ($hours/24);
+        // return $days;
+        $newPrice = $request->price + $days *5 ; //مثلا كل يوم بدري بيزود 5 دولار
+        $newPrice= number_format((float)$newPrice, 2, '.', '');
+        $project = Project::where('id',$request->project_id)->first();
+        $package = Package::where('id',$request->package_id)->first();
+
+        $project->update([
+           'package_id'=>$package->id,
+           'price'=>$newPrice
+        ]);
+
+        return response()->json([
+            // 'project_id'=>$project->id,
+            // 'package_id'=>$package->id,
+            // 'package_name'=>$package->name,
+            // 'package_desc'=>$package->description,
+            'price'=>$newPrice,
+            'deliveryDate'=>$request->DateFaster
+        ]);
+
+
+    }
+    public function completeInfo(Request $request){
+        $validator = Validator::make($request->all(), [  //|date_format:Y-m-d H:i A
+            'name'=>'required|string',
+            'deliveryDate'=>'required|after:' . date(DATE_ATOM, time() + (5 * 60 * 60)),
+            "package_id"=>'required|exists:packages,id',
+            "project_id"=>'required|exists:projects,id',
+            'price'=>'required|numeric',
+            'notes'=>'nullable|string'
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                "message" => $validator->errors()
+            ], 409);
+        }
+        $project = Project::where('id',$request->project_id)->first();
+        $update=  $project->update([
+          'name'=>$request->name,
+          'package_id'=>$request->package_id,
+          'price'=>$request->price,
+          'notes'=>$request->notes,
+          'selectedDeliveryDate'=>$request->deliveryDate
+        ]);
+        if($update){
+            return response()->Json([
+               "message"=>'your data has been saved, please continue to pay..',
+               "project_id"=>$project->id,
+            ]);
+        }else{
+            return response()->json([
+               "message"=>"Something went wrong.."
+            ], 409);
+        }
+
+    }
     public function update(Request $request, $id)
     {
         $project = Project::find($id);
@@ -245,7 +321,7 @@ class ProjectController extends Controller
       $project = Project::find($id);
       if ($project == null) {
           return response()->json([
-              "message" => "project not found"
+              "message" => "project not found "
           ], 404);
       }
       //validation
@@ -264,14 +340,40 @@ class ProjectController extends Controller
           ], 409);
       }
 
-      $status->update([
-         "status_id"=>$request->status_id,
+      $project->update([
+        "status_id"=>$request->status_id,
       ]);
 
       return response()->json([
           "message" => "status of $project->name project has been updated ",
       ]);
-  }
+    }
+    public function setReview(Request $request, $id){
+        //check
+        $project = Project::find($id);
+        if ($project == null) {
+            return response()->json([
+                "message" => "project not found"
+            ], 404);
+        }
+        //validation
+        $validator = Validator::make($request->all(), [
+            'review'=>'nullable|string'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                "message" => $validator->errors()
+                ],409);
+        }
+
+        $project->update([
+            "review"=>$request->review,
+        ]);
+
+        return response()->json([
+            "message" => "review of $project->name project has been updated ",
+        ]);
+    }
     public function destroy($id)
     {
         $project = Project::find($id);
@@ -291,9 +393,9 @@ class ProjectController extends Controller
     {
 
         $projects = Project::onlyTrashed()->orderBy('created_at', 'DESC')->get();
-        return response()->json([
-            'projects' =>  ProjectResource::collection($projects),
-        ]);
+
+        return ProjectResource::collection($projects);
+
     }
 
     public function restore($id)
@@ -318,6 +420,14 @@ class ProjectController extends Controller
             return response()->json([
                 "message" => "Project not found in archive"
             ], 404);
+        }
+        $files=$project->files;
+
+        if($files != null){
+            foreach($files as $file){
+                Storage::disk('public')->delete($file->name);
+
+            }
         }
         $project->forceDelete();
         return response()->json([

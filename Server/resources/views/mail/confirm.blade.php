@@ -1,2 +1,2 @@
-you have uploded two files in translated website..
-if you need to appprove the order please replay on this email
+you have uploded a project in translated website..
+The admin will contact you as soon as possible

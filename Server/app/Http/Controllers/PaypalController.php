@@ -2,27 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\confirmMail;
+use App\Models\Payment;
+use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 // use Srmklive\PayPal\Facades\PayPal;
 use Srmklive\PayPal\Services\ExpressCheckout;
 class PaypalController extends Controller
 {
-    public function payment(){
-
+    public function payment(Request $request){
+        $validator = Validator::make($request->all(), [  //|date_format:Y-m-d H:i A
+           "project_id"=>'required|exists:projects,id'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                "message" => $validator->errors()
+            ], 409);
+        }
+        $project =Project::where('id',$request->project_id)->first();
         $data=[];
         $data['items']=[
             [
-                'name'=>'file 2',
-                "numOfWords"=>465,
-                "field"=>'global',
-                "price"=>1200
+                'name'=>$project->name,
+                "numOfWords"=>$project->numOfWords,
+                "topic"=>$project->field->name,
+                "price"=>$project->price
             ]
         ];
-
-        $data['invoice_id'] = 1;
+        $payment = Payment::create([
+            'project_id'=>$project->id,
+            'amount'=>$project->price
+        ]);
+        $data['invoice_id'] = $payment->id;
         $data['invoice_description']="Order #{$data['invoice_id']} Invoice";
-        $data['return_url']='http://127.0.0.1:8000/payment/success';
-        $data['cancel_url']='http://127.0.0.1:8000/cancel';
+        $data['return_url']='http://127.0.0.1:8000/payment/success?invoice_id='.$payment->id;
+        $data['cancel_url']="http://127.0.0.1:8000/cancel?invoice_id=$payment->id";
         $total = 0;
         foreach($data['items'] as $item) {
             $total += $item['price'];
@@ -41,9 +57,10 @@ class PaypalController extends Controller
         return redirect($response['paypal_link']);
     }
 
-    public function cancel(){
+    public function cancel(Request $request){
          //نمسحها من الداتا بيز لو خزنتها  (عملية الدفع يعني)
-
+        $payment =Payment::find($request->payment_id);
+        $payment->forceDelete();
         return response()->json(
             'payment canceld', 402
         );
@@ -51,41 +68,29 @@ class PaypalController extends Controller
 
     public function success(Request $request){
         $provider = new ExpressCheckout();
-        // $data=[];
-        // $data['items']=[
-        //     [
-        //         'name'=>'file 2',
-        //         "numOfWords"=>465,
-        //         "field"=>'global',
-        //         "price"=>1200
-        //     ]
-        // ];
 
-        // $data['invoice_id'] = 1;
-        // $data['invoice_description']="Order #{$data['invoice_id']} Invoice";
-        // $data['return_url']='http://127.0.0.1:8000/payment/success';
-        // $data['cancel_url']='http://127.0.0.1:8000/cancel';
-        // $total = 0;
-        // foreach($data['items'] as $item) {
-        //     $total += $item['price'];
-        // }
-        // $data['total']=$total;
-
-        // $provider = new ExpressCheckout();
-        //    $options = [
-        //     'BRANDNAME' => 'translated website',
-        // ];
-        // $provider->addOptions($options)->setExpressCheckout($data);
         $response =$provider->getExpressCheckoutDetails($request->token);
         if (in_array(strtoupper($response['ACK']), ['SUCCESS', 'SUCCESSWITHWARNING'])) {
             //نخزن عملية الدفع في الداتا بيز هنا لو عايزين
+            $payment =Payment::find($request->invoice_id);
+            $payment->update([
+                'token'=>$request->token,
+                'PayerID'=>$request->PayerID
+            ]);
+             $email= $payment->project->client->email;
+            //  return $email;
+            Mail::to('hajermuhammad823@gmail.com')
+            ->send( new confirmMail());
+            return response()->json([
+             "message"=>"Payment was successfull and your project has been received please check your mail!"
+            ]);
             // return response()->json('Payment was successfull. The payment success page goes here!');
-            // $response = $provider->doExpressCheckoutPayment($data, $request->token, $request->PayerID);
+            // $response = $provider->getTransactionDetails($request->token);
             // return $response;
-            $response = $provider->getTransactionDetails($request->token);
-            return $response;
         }
         //نمسحها من الداتا بيز لو خزنتها  (عملية الدفع يعني)
+        $payment =Payment::find($request->invoice_id);
+        $payment->forceDelete();
         return response()->json(
             'fail payment', 402
         );

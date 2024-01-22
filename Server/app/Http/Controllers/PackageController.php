@@ -29,7 +29,8 @@ class PackageController extends Controller
             'name'=>'required|string|max:100|unique:packages,name',
             'increasePercentage'=> 'numeric|required',
             'word_unite'=>'numeric|required',
-            'expected_numOfDays'=>'numeric|required'
+            'expected_numOfDays'=>'numeric|required',
+            'description'=>'nullable|string'
         ]);
 
         if ($validator->fails()) {
@@ -67,7 +68,8 @@ class PackageController extends Controller
             'name'=>'required|string|max:100|unique:packages,name,'.$id,
             'increasePercentage'=> 'numeric|required',
             'word_unite'=>'numeric|required',
-            'expected_numOfDays'=>'numeric|required'
+            'expected_numOfDays'=>'numeric|required',
+            'description'=>'nullable|string'
         ]);
         if ($validator->fails()) {
             return response()->json([
