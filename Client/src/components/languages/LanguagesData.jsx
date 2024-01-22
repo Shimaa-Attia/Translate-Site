@@ -58,6 +58,7 @@ export function LanguagesData() {
   let sendingEditedLanguageDataToApi = async (langId) => {
     await axios.put(`http://127.0.0.1:8000/api/languages/${langId}`, languages).then((res) => {
       toast.success(res?.data?.message);
+      getLanguagesData()
     }).catch((errors) => {
       const errorList = errors?.response?.data?.message;
       if (errorList !== undefined) {

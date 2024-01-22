@@ -50,7 +50,7 @@ export function TopicsData() {
     let sendingEditedTopicDataToApi = async (topId) => {
         await axios.put(`http://127.0.0.1:8000/api/fields/${topId}`, topics).then((res) => {
             toast.success(res?.data?.message);
-
+            getTopicsData();
         }).catch((errors) => {
             const errorList = errors?.response?.data?.message;
             if (errorList !== undefined) {
@@ -76,8 +76,8 @@ export function TopicsData() {
         let validation = validateEditedTopicForm();
         if (!validation?.error) {
             sendingEditedTopicDataToApi(topicId);
-            
             setTopics({ name: '', price: '' });
+
         } else {
             try {
                 validation?.error?.details?.map((err) => {

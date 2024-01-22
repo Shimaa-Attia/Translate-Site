@@ -41,9 +41,9 @@ export function CountriesData() {
       if (data) {
         setOneCountry(data);
         setCountries({
-          name:data?.name,
-          code:data?.code,
-          price:data?.price
+          name: data?.name,
+          code: data?.code,
+          price: data?.price
         })
       }
     } catch (error) {
@@ -58,7 +58,7 @@ export function CountriesData() {
   let sendingEditedCountriesDataToApi = async (countId) => {
     await axios.put(`http://127.0.0.1:8000/api/countries/${countId}`, countries).then((res) => {
       toast.success(res?.data?.message);
-
+      getCountriesData()
     }).catch((errors) => {
       const errorList = errors?.response?.data?.message;
       if (errorList !== undefined) {
