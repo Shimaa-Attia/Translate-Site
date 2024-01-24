@@ -19,23 +19,23 @@ export default function Navbar() {
             <Menu />
           </div>
           <div className='hidden md:flex items-center gap-4 font-semibold text-sm lg:text-lg ' >
-            <div className={pathName == '/public' ? 'text-gray-400' : ''}>
+            <div className={pathName == '/' ? 'text-gray-400' : ''}>
             <Link href='/' >Home</Link>
             </div>
-            <div className={pathName == '/public/about' ? 'text-gray-400' : ''}>
-            <Link href='/public/about'  >About us</Link>
+            <div className={pathName == '/about' ? 'text-gray-400' : ''}>
+            <Link href='/about'  >About us</Link>
             </div>
-            <div className={pathName == '/public/services' ? 'text-gray-400' : ''}>
-            <Link href='/public/services'>Our Services</Link>
+            <div className={pathName == '/services' ? 'text-gray-400' : ''}>
+            <Link href='/services'>Our Services</Link>
             </div>
-            <div className={pathName == '/public/clients' ? 'text-gray-400' : ''}>
-            <Link href='/public/clients'>Clients </Link>
+            <div className={pathName == '/clients' ? 'text-gray-400' : ''}>
+            <Link href='/clients'>Clients </Link>
             </div>
-            <div className={`border p-2 ${pathName == '/public/contact' ? 'text-gray-400' : ''}`}>
-              <Link href='/public/contact' >Contact us</Link>
+            <div className={`border p-2 ${pathName == '/contact' ? 'text-gray-400' : ''}`}>
+              <Link href='/contact' >Contact us</Link>
             </div>
             <div className='transition ease-in-out delay-150  bg-indigo-600 text-white  hover:-translate-y-1 hover:scale-105 hover:bg-indigo-500 duration-300    p-2 rounded '>
-              <Link href='/public/quote'>Instant quote</Link>
+              <Link href='/quote'>Instant quote</Link>
             </div>
 
           </div>
