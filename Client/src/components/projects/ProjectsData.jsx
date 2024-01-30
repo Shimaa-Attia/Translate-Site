@@ -1,6 +1,7 @@
 "use client"
 import axios from "axios";
 import Joi from "joi";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 export function ProjectsData() {
@@ -20,104 +21,53 @@ export function ProjectsData() {
   useEffect(() => {
     getProjectsData()
   }, [])
-  //edit topic
-  // let [isOpen, setIsOpen] = useState(false);
-  // let [topicId, setTopicId] = useState('');
-  // let [topics, setTopics] = useState({
-  //     name: '',
-  //     price: ''
-  // });
-  //getting data for one country 
-  // let [oneTopic, setOneTopic] = useState([]);
-  // let getOneTopic = async (topId) => {
-  //     try {
-  //         let { data } = await axios.get(`http://127.0.0.1:8000/api/fields/show/${topId}`)
-  //         if (data) {
-  //             setOneTopic(data.data);
-  //             setTopics({
-  //                 name: data?.data?.name,
-  //                 price: data?.data?.price
-  //             })
-  //         }
-  //     } catch (error) {
-  //         toast.error('Something went wrong.')
-  //     }
-  // }
-  // let getInputValue = (event) => {
-  //     let myTopics = { ...topics };
-  //     myTopics[event?.target?.name] = event?.target?.value;
-  //     setTopics(myTopics);
-  // }
-  // let sendingEditedTopicDataToApi = async (topId) => {
-  //     await axios.put(`http://127.0.0.1:8000/api/fields/${topId}`, topics).then((res) => {
-  //         toast.success(res?.data?.message);
-  //         getTopicsData();
-  //     }).catch((errors) => {
-  //         const errorList = errors?.response?.data?.message;
-  //         if (errorList !== undefined) {
-  //             Object.keys(errorList)?.map((err) => {
-  //                 errorList[err]?.map((err) => {
-  //                     toast.error(err)
-  //                 })
-  //             });
-  //         } else {
-  //             toast.error('Something went wrong.')
-  //         }
-  //     })
-  // }
-  // let validateEditedTopicForm = () => {
-  //     const schema = Joi.object({
-  //         name: Joi.string().required(),
-  //         price: Joi.number().empty(null),
-  //     });
-  //     return schema.validate(topics, { abortEarly: false });
-  // };
-  // let submitEditedTopicForm = async (e) => {
-  //     e.preventDefault();
-  //     let validation = validateEditedTopicForm();
-  //     if (!validation?.error) {
-  //         sendingEditedTopicDataToApi(topicId);
-  //         setTopics({ name: '', price: '' });
 
-  //     } else {
-  //         try {
-  //             validation?.error?.details?.map((err) => {
-  //                 toast.error(err.message);
-  //             })
-  //         } catch (e) {
-  //             toast.error('Something went wrong.')
-  //         }
-  //     }
-  // }
   let showProjects = () => {
     if (projectsData.length > 0) {
       return (
-        <div className="shadow rounded my-4 bg-gray-100 mx-3 p-3  ">
-          <table>
-            <thead >
-              <tr>
-                <th>Name</th>
-                <th>File</th>
-                <th>Client Name</th>
-                <th>Client Email</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Orderd?</th>
-                <th>Package</th>
-                <th>Price</th>
+
+        <div className="shadow rounded my-4  bg-gray-100 mx-3 p-3  ">
+
+          <table className=" border border-slate-500  w-full text-center">
+            <thead className="bg-gray-400 " >
+              <tr >
+                <th className="border p-1">Project name</th>
+                <th className="border p-1">File</th>
+                {/* <th className="border p-1">Client name</th> */}
+                <th className="border p-1">Client email</th>
+                <th className="border p-1">From</th>
+                <th className="border p-1">To</th>
+                <th className="border p-1">Orderd?</th>
+                <th className="border p-1">Package</th>
+                <th className="border p-1">Price</th>
+                <th className="border p-1">Actions</th>
               </tr>
             </thead>
             <tbody>
               {projectsData.map((proj, index) => <tr key={index}>
-                <td>{proj.name}</td>
-                <td>file</td>
-                <td>{proj.client.name}</td>
-                <td>{proj.client.email}</td>
-                <td>{proj.from_language.name}</td>
-                <td>{proj.from_language.name}</td>
-                <td>{proj.is_orderd}</td>
-                <td>{proj.is_orderd}</td>
-                <td>{proj.is_orderd}</td>
+                <td className="border p-1">{proj?.name}</td>
+                <td className="border p-1">
+                  {proj.attachments?.length > 0 ? (
+                    proj.attachments.map((attachment, attachmentIndex) => (
+                      <div key={attachmentIndex}>
+                        <Link href={attachment.file} passHref>
+                      upload file
+                        </Link>
+                      </div>
+                    ))
+                  ) : (
+                    'No attachments'
+                  )}
+                </td>
+                {/* <td className="border p-1">{proj.client.name}</td> */}
+                <td className="border p-1">{proj.client.email}</td>
+                <td className="border p-1">{proj.from_language.name}</td>
+                <td className="border p-1">{proj.from_language.name}</td>
+                <td className="border p-1">{proj.is_orderd}</td>
+                <td className="border p-1">{proj?.package?.name}</td>
+                <td className="border p-1">{proj?.price}</td>
+                <td className="border p-1">{proj?.price}</td>
+
               </tr>
 
               )}

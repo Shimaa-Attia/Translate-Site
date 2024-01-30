@@ -4,9 +4,11 @@ import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 import axios from 'axios';
 import Link from 'next/link';
+import Joi from 'joi';
 const DynamicSelect = dynamic(() => import('react-select'), { ssr: false });
 
 export default function QuoteForm() {
+  let [isLoading, setIsLoading] = useState(false);
   let [project, setProject] = useState({
     feild_name: '',
     from_language: '',
@@ -100,7 +102,7 @@ export default function QuoteForm() {
     myProject[event?.target?.name] = event?.target?.value;
     setProject(myProject);
   }
-  let [errorMsg, setErrorMsg] = useState('')
+  let [errorMsg, setErrorMsg] = useState([])
   let [packagesData, setPackagesData] = useState([])
   let sendingProjectDataToApi = async () => {
     let projectData = new FormData();
@@ -116,6 +118,7 @@ export default function QuoteForm() {
     project.attachments.forEach((file, index) => {
       projectData.append(`attachments[${index}]`, file);
     });
+    setIsLoading(true)
     await axios.post(`http://127.0.0.1:8000/api/projects`, projectData).then((res) => {
       console.log(res);
       localStorage.setItem('projectId', res.data.project_id)
@@ -123,13 +126,14 @@ export default function QuoteForm() {
       toast.success(res?.data?.message);
     }).catch((errors) => {
       console.log(errors);
+      setIsLoading(false)
+      toast.error('wronge')
       const errorList = errors?.response?.data?.message;
-      console.log(errorList);
       if (errorList !== undefined) {
         Object.keys(errorList)?.map((err) => {
+          console.log(err);
           errorList[err]?.map((err) => {
-            console.log(err);
-            setErrorMsg([...err])
+            toast.error('Something went wrong.')
           })
         });
       } else {
@@ -137,38 +141,33 @@ export default function QuoteForm() {
       }
     })
   }
-  let validatePackagesForm = () => {
+  let validateProjectForm = () => {
     const schema = Joi.object({
-      name: Joi.string().required(),
-      word_unite: Joi.number().required(),
-      increasePercentage: Joi.number().required(),
-      expected_numOfDays: Joi.number().required(),
-      description: Joi.string().empty('')
+      feild_name: Joi.string().required(),
+      from_language: Joi.string().required(),
+      to_languages: Joi.string().required(),
+      attachments: Joi.any().required(),
+      numOfWords: Joi.number().required(),
+      client_email: Joi.any().required()
     });
-    return schema.validate(packages, { abortEarly: false });
+    return schema.validate(project, { abortEarly: false });
   };
   let submitProjectForm = async (e) => {
     e.preventDefault();
-    sendingProjectDataToApi()
-    // let validation = validatePackagesForm();
-    // if (!validation?.error) {
-    //   sendingPackagesDataToApi();
-    //   setPackages({
-    //     name: '',
-    //     word_unite: '',
-    //     increasePercentage: '',
-    //     expected_numOfDays:'',
-    //     description:''
-    //   });
-    // } else {
-    //   try {
-    //     validation?.error?.details?.map((err) => {
-    //       toast.error(err.message);
-    //     })
-    //   } catch (e) {
-    //     toast.error('Something went wrong.')
-    //   }
-    // }
+    // sendingProjectDataToApi()
+    let validation = validateProjectForm();
+    if (!validation?.error) {
+      sendingProjectDataToApi();
+    } else {
+      try {
+        console.log(validation);
+        validation?.error?.details?.map((err) => {
+          toast.error(err.message);
+        })
+      } catch (e) {
+        toast.error('Something went wrong.')
+      }
+    }
   }
 
 
@@ -194,8 +193,8 @@ export default function QuoteForm() {
               <label htmlFor="to_languages"
                 className="block text-sm font-semibold text-gray-800 "
               >To <span className='text-[13px]  float-end text-blue-600'>(you can add multiple languages)</span>
-              <p className='clear-end'></p>
-               </label>
+                <p className='clear-end'></p>
+              </label>
               <DynamicSelect
                 options={languagesOptions}
                 onChange={handleToLangChange}
@@ -262,39 +261,47 @@ export default function QuoteForm() {
               />
             </div>
             <div>
-              <button type='submit' className="w-full py-2  text-white transition-colors duration-200 transform bg-blue-700 rounded-md hover:bg-indigo-600">Show Prices</button>
+            </div>
+            <div>
+              <button type='submit' className=" flex items-center justify-center w-full py-2 mt-3 text-white transition-colors duration-200 transform bg-blue-700 rounded-md hover:bg-indigo-600">
+                {isLoading == true ? <div>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className=" animate-spin  w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                  </svg>
+                </div> : 'Show price'}
+              </button>
             </div>
           </div>
         </form>
         <div>
-      
+
           {packagesData.length > 0 &&
             <div>
               {packagesData.length > 0 ? (
                 <div className='flex border-1 mx-9 shadow my-7 border-gray-300'>
                   {packagesData?.map((pack, index) => (
                     <div key={index} className=" bg-white p-8 text-center w-1/3 border">
-                   
-                        <p className='text-2xl font-semibold my-3'>{pack?.package_name}</p>
-                        <p className=''>{pack?.package_desc}</p>
-                        <p className='text-sm mt-14 text-gray-500'>delivery guaranteed by</p>
-                        <p className='font-medium'>{pack?.deliveryDate}</p>
-                        <p className='text-sm text-gray-500'>Need it faster?</p>
-                        <p className='text-2xl  font-semibold my-6'>${pack?.price}</p>
-                        <button className='bg-blue-800 text-gray-200 py-2 w-1/2 rounded' onClick={()=>{
-                          localStorage.setItem("packageId" , pack.package_id)
-                          localStorage.setItem("packagePrice" , pack.price)
-                          localStorage.setItem("packageDate" , pack.deliveryDate)
-                        }}>
-                          <Link href='/order'>Order</Link>
-                          </button>
-                
+
+                      <p className='text-2xl font-semibold my-3'>{pack?.package_name}</p>
+                      <p className=''>{pack?.package_desc}</p>
+                      <p className='text-sm mt-14 text-gray-500'>delivery guaranteed by</p>
+                      <p className='font-medium'>{pack?.deliveryDate}</p>
+                      <p className='text-sm text-gray-500'>Need it faster?</p>
+                      <p className='text-2xl  font-semibold my-6'>${pack?.price}</p>
+                      <button className='bg-blue-800 text-gray-200 py-2 w-1/2 rounded' onClick={() => {
+                        localStorage.setItem("packageId", pack.package_id)
+                        localStorage.setItem("packagePrice", pack.price)
+                        localStorage.setItem("packageDate", pack.deliveryDate)
+                      }}>
+                        <Link href='/order'>Order</Link>
+                      </button>
+
                     </div>
                   ))}
                 </div>
               ) : ''}
             </div>
-         } 
+          }
         </div>
       </div>
     </>
