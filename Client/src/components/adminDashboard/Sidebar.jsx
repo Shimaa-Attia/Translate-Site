@@ -8,7 +8,7 @@ export default function Sidebar() {
 
     return (
         <>
-            <aside className=" hidden lg:block md:block fixed  top-[4.05rem] h-[calc(100vh-4rem)]  text-gray-700 left-0  w-64  pt-16  bg-slate-300 border-r  border-gray-200 ">
+            <aside className=" hidden lg:block md:block fixed  top-[4.05rem] h-[calc(100vh-4rem)]  text-gray-700 left-0  w-60  pt-16  bg-slate-300 border-r  border-gray-200 ">
                 <div className="h-full px-3 pb-4 overflow-y-auto bg-slate-300 ">
                     <ul className="space-y-2 font-medium">
                         <li>

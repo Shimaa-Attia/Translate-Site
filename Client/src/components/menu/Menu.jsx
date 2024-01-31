@@ -10,9 +10,9 @@ export default function Menu() {
 
     const links = [
         { id: 1, title: 'Home', url: '/' },
-        { id: 2, title: 'About us', url: '/public/about' },
-        { id: 3, title: 'Our Services', url: '/public/services' },
-        { id: 4, title: 'Clients', url: '/public/clients' },
+        { id: 2, title: 'About us', url: '/about' },
+        { id: 3, title: 'Our Services', url: '/services' },
+        { id: 4, title: 'Clients', url: '/clients' },
     ]
     return (
         <>
@@ -39,10 +39,10 @@ export default function Menu() {
                                     {item.title}</Link>
                             ))}
                             <div className='border py-2 px-3 mx-auto rounded mt-6 ' onClick={() => { setOpen(false) }}>
-                                <Link href='/public/contact'>Contact us</Link>
+                                <Link href='/contact'>Contact us</Link>
                             </div>
                             <div className='bg-blue-600 text-white mt-3 mx-auto p-2 rounded' onClick={() => { setOpen(false) }} >
-                                <Link href='/public/quote'>Instant quote</Link>
+                                <Link href='/quote'>Instant quote</Link>
                             </div>
                         </div>
                     </>
