@@ -21,15 +21,15 @@ class ProjectResource extends JsonResource
              'id'=>$file->id,
              'name'=>$file->name,
              'file'=>asset('storage')."/". $file->name
-         ];
-       }
+           ];
+        }
        $is_orderd="no";
        $payments=$this->payments;
        foreach($payments as $payment){
-        if($payment->token !=null & $payment->PayerID !=null){
-            $is_orderd="yes";
+            if($payment->token !=null & $payment->PayerID !=null){
+                $is_orderd="yes";
+            }
         }
-       }
         return [
            'id'=>$this->id,
            'name'=>$this->name,
@@ -42,7 +42,7 @@ class ProjectResource extends JsonResource
            'numOfWords'=>$this->numOfWords,
            'package'=>$this->package,
            'price'=>$this->price,
-           'selectedDeliveryDate'=> optional($this->selectedDeliveryDate)->format('Y/m/d h:i A') ,
+           'selectedDeliveryDate'=>optional($this->selectedDeliveryDate)->format('Y/m/d h:i A') ,
            'attachments'=> $customForm,
            'status'=>optional($this->status)->name,
            'from_language'=>$this->language,

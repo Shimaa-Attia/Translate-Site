@@ -79,7 +79,7 @@ class PaypalController extends Controller
             ]);
              $email= $payment->project->client->email;
             //  return $email;
-            Mail::to('hajermuhammad823@gmail.com')
+            Mail::to($email)
             ->send( new confirmMail());
             return response()->json([
              "message"=>"Payment was successfull and your project has been received please check your mail!"
