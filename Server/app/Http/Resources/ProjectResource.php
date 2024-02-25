@@ -42,6 +42,8 @@ class ProjectResource extends JsonResource
            'numOfWords'=>$this->numOfWords,
            'package'=>$this->package,
            'price'=>$this->price,
+           'priceInClientCurrency'=>$this->priceInClientCurrency,
+           'clientCurrency'=>$this->clientCurrency,
            'selectedDeliveryDate'=>optional($this->selectedDeliveryDate)->format('Y/m/d h:i A') ,
            'attachments'=> $customForm,
            'status'=>optional($this->status)->name,

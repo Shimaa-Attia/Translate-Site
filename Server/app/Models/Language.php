@@ -15,11 +15,11 @@ class Language extends Model
         'code',
         'price'
     ];
-    public function projects(){
+    public function projects(){   //many to many 
         return $this->belongsToMany(Project::class);
     }
-
-    public function Fprojects(){
+ 
+    public function Fprojects(){  //one to many
         return $this->hasMany(Project::class,'from_language','id');
     }
 }

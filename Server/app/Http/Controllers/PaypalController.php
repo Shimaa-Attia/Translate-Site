@@ -28,7 +28,8 @@ class PaypalController extends Controller
                 'name'=>$project->name,
                 "numOfWords"=>$project->numOfWords,
                 "topic"=>$project->field->name,
-                "price"=>$project->price
+                "price"=>$project->priceInClientCurrency,
+                "currency"=>$project->clientCurrency
             ]
         ];
         $payment = Payment::create([
@@ -70,12 +71,13 @@ class PaypalController extends Controller
         $provider = new ExpressCheckout();
 
         $response =$provider->getExpressCheckoutDetails($request->token);
+        // dd($response);
         if (in_array(strtoupper($response['ACK']), ['SUCCESS', 'SUCCESSWITHWARNING'])) {
             //نخزن عملية الدفع في الداتا بيز هنا لو عايزين
             $payment =Payment::find($request->invoice_id);
             $payment->update([
                 'token'=>$request->token,
-                'PayerID'=>$request->PayerID
+                'PayerID'=>$response['PAYERID'] //$request->PayerID
             ]);
              $email= $payment->project->client->email;
             //  return $email;

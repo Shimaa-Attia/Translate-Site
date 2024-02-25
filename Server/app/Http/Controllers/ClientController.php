@@ -33,46 +33,46 @@ class ClientController extends Controller
 
     }
 
-    public function create(Request $request)
-    {
-        if ($position =  Location::get('ip_address')) {
-            $county_name=$position->countryName;
-            $country = Country::where('name', $county_name)->first();
-             if($country==null){
-                return response()->json([
-                  "message"=>"Not allowed country"
-                ]);
-             }
-        }
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            "phones" => 'nullable|min:11|regex:/^01[0125][0-9]{8}$/|max:11|unique:clients,phone',
-            "email"=>'required|email',
-            // 'country_name' => 'required|exists:countries,name' //
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                "message" => $validator->errors(),409]);
-        }
+    // public function create(Request $request)
+    // {
+    //     if ($position =  Location::get('ip_address')) {
+    //         $county_name=$position->countryName;
+    //         $country = Country::where('name', $county_name)->first();
+    //          if($country==null){
+    //             return response()->json([
+    //               "message"=>"Not allowed country"
+    //             ]);
+    //          }
+    //     }
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => 'required',
+    //         "phones" => 'nullable|min:11|regex:/^01[0125][0-9]{8}$/|max:11|unique:clients,phone',
+    //         "email"=>'required|email',
+    //         // 'country_name' => 'required|exists:countries,name' //
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             "message" => $validator->errors(),409]);
+    //     }
 
-        $client= Client::where('email',$request->email)->first();
-        if($client == null ){
-            return response()->json([
-              'message'=>"Please enter the same email you used when uploading files"
-            ],409);
-        }
+    //     $client= Client::where('email',$request->email)->first();
+    //     if($client == null ){
+    //         return response()->json([
+    //           'message'=>"Please enter the same email you used when uploading files"
+    //         ],409);
+    //     }
 
-        $client->update([
-            "name" => $request->name,
-            "phone" => $request->phone,
-            "country_id" => $country->id
-        ]);
+    //     $client->update([
+    //         "name" => $request->name,
+    //         "phone" => $request->phone,
+    //         "country_id" => $country->id
+    //     ]);
 
-        return response()->json([
-            'message'=>"your data has been saved, Please continue to pay"
-          ]);
+    //     return response()->json([
+    //         'message'=>"your data has been saved, Please continue to pay"
+    //       ]);
 
-    }
+    // }
 
      public function update(Request $request, $id)
       {
@@ -86,7 +86,7 @@ class ClientController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            "phones" => 'nullable|min:11|regex:/^01[0125][0-9]{8}$/|max:11|unique:clients,phone'.$id,
+            "phone" => 'nullable|min:11|regex:/^01[0125][0-9]{8}$/|max:11|unique:clients,phone'.$id,
             "email"=>'required|email|unique:clients,email'.$id,
             'country_name' => 'required|exists:countries,name'
         ]);
@@ -97,15 +97,16 @@ class ClientController extends Controller
 
 
         $country = Country::where('name', $request->country_name)->first('id');
+        $request->request->add(['country_id'=>$country->id]);
 
 
-        $client->update([
-            "name" => $request->name,
-            "email" => $request->email,
-            "phone" => $request->phone,
-            "review" => $request->review,
-            "country_id" => $country->id,
-        ]);
+        // $client->update([
+        //     "name" => $request->name,
+        //     "email" => $request->email,
+        //     "phone" => $request->phone,
+        //     "country_id" => $country->id,
+        // ]);
+        $client->update($request->all());
         //response
         return response()->json([
             "message" => "Client data has been updated ", "client " => $client
@@ -171,9 +172,9 @@ class ClientController extends Controller
 
     public function search($key)
     {
-        $clients = Client::where('name', 'like', "$key.%")
-                 ->OrWhere('email', 'like', "$key.%")
-                 ->OrWhere('phone', 'like', "$key.%")
+        $clients = Client::where('name', 'like', "%$key%")
+                 ->OrWhere('email', 'like', "%$key%")
+                 ->OrWhere('phone', 'like', "%$key%")
                 ->orWhereHas('country', function ($query) use ($key) {
                     $query->where('name', 'like', "%$key%");
                 })

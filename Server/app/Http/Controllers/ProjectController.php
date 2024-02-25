@@ -44,7 +44,9 @@ class ProjectController extends Controller
     {
         // return date('Y-m-d H:i:s',time()+ (5 * 60 * 60));//,
         //$position->timezone;
-        if ($position =  Location::get('ip_address')) {
+
+        $positionObject = new PositionController;
+        $position = $positionObject->ipDetails();
             $county_name=$position->countryName;
             $country = Country::where('name', $county_name)->first();
              if($country==null){
@@ -52,7 +54,7 @@ class ProjectController extends Controller
                   "message"=>"Not allowed country"
                 ]);
              }
-        }
+
         $validator = Validator::make($request->all(), [
             'feild_name' => 'required|exists:fields,name',
             'from_language'=>'required|exists:languages,id',
@@ -88,22 +90,22 @@ class ProjectController extends Controller
         $price =0;
 
         //num of words
-        $words100Price = Price::where('type','100Word')->first()->price;
-        $wordsUnite= ($request->numOfWords) /100;
-        $price+= $wordsUnite*$words100Price;
+        $words250Price = Price::where('type','250Word')->first()->price;
+        $wordsUnite= ($request->numOfWords) /250;
+        $price+= $wordsUnite*$words250Price;
 
         //field
         if($field->price !=null){
              $price+=$field->price;
         }else{
-           $price += Price::where('type','field')->first()->price;
+           $price += Price::where('type','fields')->first()->price;
         }
 
         //country
         if($country->price !=null){
             $price+=$country->price;
         }else{
-           $price += Price::where('type','field')->first()->price;
+           $price += Price::where('type','countries')->first()->price;
         }
 
         //from language
@@ -111,7 +113,7 @@ class ProjectController extends Controller
         if($from_language->price !=null){
         $price+=$from_language->price;
         }else{
-            $price += Price::where('type','language')->first()->price;
+            $price += Price::where('type','languages')->first()->price;
         }
 
 
@@ -122,7 +124,7 @@ class ProjectController extends Controller
             if($to_language->price !=null){
                 $price+=$to_language->price;
             }else{
-                $price += Price::where('type','language')->first()->price;
+                $price += Price::where('type','languages')->first()->price;
             }
         }
 
@@ -131,6 +133,11 @@ class ProjectController extends Controller
        $offers=[];
        foreach($packages as $package){
           $packagePrice = $price + $price*($package->increasePercentage/100);
+          if($position->countryCode !='US'){
+            $priceInClientCurrency =$positionObject->changeCurrensy($packagePrice);
+          }else{
+           $priceInClientCurrency =$packagePrice;
+          }
           $num_of_wordUnite= ($request->numOfWords) / ($package->word_unite);
         //   return $num_of_wordUnite;
         //   return $package->word_unite;
@@ -139,15 +146,20 @@ class ProjectController extends Controller
         $daysInSecondes=$numOfDays*24*60*60;
         // return $daysInSecondes;
         $date=date("Y-m-d h:i A", time() + $daysInSecondes);
+
+        $currencyCode =  $positionObject->getCurrencyFromPosition($position);
           $offers[]=
           [
             'package_id'=>$package->id,
             'package_name'=>$package->name,
             'package_desc'=>$package->description,
             'price'=>"$packagePrice",
+            'priceInClientCurrency'=>$priceInClientCurrency,
+            'currencyCode'=>$currencyCode,
             'deliveryDate'=>$date
           ];
        }
+       return $offers;
 
         // DB::transaction(function () use ($request,$client,$field,$country) {
 
@@ -158,7 +170,6 @@ class ProjectController extends Controller
                 "country_id"=>$country->id,
                 'from_language'=>$request->from_language,
                 'name'=>"undefined"
-
             ]);
             if($project){
 
@@ -203,7 +214,7 @@ class ProjectController extends Controller
         ]);
 
     }
-
+// اي ميثود هنخزن فيه السعر نخزن كمان السعر المتحول
     public function FasterDeliveryDate(Request $request){
         $validator = Validator::make($request->all(), [  //|date_format:Y-m-d H:i A
             "DateFaster"=>'required|after:' . date(DATE_ATOM, time() + (5 * 60 * 60)),
@@ -229,10 +240,20 @@ class ProjectController extends Controller
         $newPrice= number_format((float)$newPrice, 2, '.', '');
         $project = Project::where('id',$request->project_id)->first();
         $package = Package::where('id',$request->package_id)->first();
+        $positionObject = new PositionController;
+        $position = $positionObject->ipDetails();
+        if($position->countryCode !='US'){
+          $priceInClientCurrency =$positionObject->changeCurrensy($newPrice);
+        }else{
+          $priceInClientCurrency =$newPrice;
+        }
 
+        $currencyCode =  $positionObject->getCurrencyFromPosition($position);
         $project->update([
            'package_id'=>$package->id,
-           'price'=>$newPrice
+           'price'=>$newPrice,
+           'priceInClientCurrency'=>$priceInClientCurrency,
+           'clientCurrency'=>$currencyCode
         ]);
 
         return response()->json([
@@ -253,7 +274,10 @@ class ProjectController extends Controller
             "package_id"=>'required|exists:packages,id',
             "project_id"=>'required|exists:projects,id',
             'price'=>'required|numeric',
-            'notes'=>'nullable|string'
+            'notes'=>'nullable|string',
+            'client_name' => 'required|string|min:5',
+            "phones" => 'nullable|min:11|regex:/^01[0125][0-9]{8}$/|max:11|unique:clients,phone',
+            "email"=>'required|email',
 
         ]);
         if ($validator->fails()) {
@@ -261,19 +285,42 @@ class ProjectController extends Controller
                 "message" => $validator->errors()
             ], 409);
         }
+        $client= Client::where('email',$request->email)->first();
+        if($client == null ){
+            return response()->json([
+              'message'=>"Please enter the same email you used when uploading files"
+            ],409);
+        }
         $project = Project::where('id',$request->project_id)->first();
+        $client->update([
+            "name" => $request->client_name,
+            "phone" => $request->phone,
+            "country_id" => $project->country_id
+        ]);
+
+        $positionObject = new PositionController;
+        $position = $positionObject->ipDetails();
+        if($position->countryCode !='US'){
+          $priceInClientCurrency =$positionObject->changeCurrensy($request->price);
+        }else{
+          $priceInClientCurrency =$request->price;
+        }
+
+        $currencyCode =  $positionObject->getCurrencyFromPosition($position);
         $update=  $project->update([
           'name'=>$request->name,
           'package_id'=>$request->package_id,
           'price'=>$request->price,
           'notes'=>$request->notes,
-          'selectedDeliveryDate'=>$request->deliveryDate
+          'selectedDeliveryDate'=>$request->deliveryDate,
+          'priceInClientCurrency'=>$priceInClientCurrency,
+          'clientCurrency'=>$currencyCode
         ]);
         if($update){
             return response()->Json([
                "message"=>'your data has been saved, please continue to pay..',
                "project_id"=>$project->id,
-            ]);
+        ]);
         }else{
             return response()->json([
                "message"=>"Something went wrong.."

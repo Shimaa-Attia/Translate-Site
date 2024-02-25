@@ -113,7 +113,7 @@ class PackageController extends Controller
     public function archive()
     {
 
-        $packages = Package::onlyTrashed()->get();
+        $packages = Package::onlyTrashed()->orderBy('created_at', 'DESC')->get();
 
         return response()->json([
             'packages' => $packages

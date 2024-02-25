@@ -1,18 +1,22 @@
 <?php
 
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\CountryController;
-use App\Http\Controllers\CustomFieldController;
-use App\Http\Controllers\FieldController;
-use App\Http\Controllers\LanguageController;
-use App\Http\Controllers\PackageController;
-use App\Http\Controllers\PaypalController;
-use App\Http\Controllers\PriceController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\testController;
-use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\FieldController;
+use App\Http\Controllers\PriceController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\PaypalController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AboutUsController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\PackageController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\PositionController;
+use App\Http\Controllers\CustomFieldController;
+use App\Http\Controllers\PreviousClientsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,9 +32,9 @@ use Illuminate\Support\Facades\Route;
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::post('/ip',[testController::class,'ip']);
-Route::get('/mail',[testController::class,'mail']);
-Route::get('/lang/{lang?}',[testController::class,'lang']);
+Route::post('/ip',[PositionController::class,'ipDetails']);
+Route::get('/mail',[PositionController::class,'mail']);
+Route::get('/lang/{lang?}',[PositionController::class,'lang']);
 
 Route::get('payment',[PaypalController::class,'payment'])->name('payment');
 Route::get('cancel',[PaypalController::class,'cancel'])->name('payment.cancel');
@@ -144,7 +148,7 @@ Route::group(['prefix'=>'clients','as'=>'clients.'],function(){
     //show
     Route::get('/show/{id}',[ClientController::class,'show']);
     //create
-    Route::post('/',[ClientController::class,'create']);
+    // Route::post('/',[ClientController::class,'create']);
     //update
     Route::put('/{id}',[ClientController::class,'update']);
     // soft delete
@@ -200,11 +204,9 @@ Route::group(['prefix'=>'packages','as'=>'packages.'],function(){
     Route::delete('/deleteArchive/{id}',[PackageController::class,'deleteArchive']);
      //search
      Route::get('/search/{key}',[PackageController::class,'search']);
-
-
-
 });
 
+//projectStatus ,  description ,///مش هينفع aboutUs , ourServices
 Route::group(['prefix'=>'customFields','as'=>'customFields.'],function(){
     //getCustomList
     Route::get('/getCustomList/{type}',[CustomFieldController::class,'getCustomList']);
@@ -220,4 +222,76 @@ Route::group(['prefix'=>'customFields','as'=>'customFields.'],function(){
     Route::post('/restore/{id}',[CustomFieldController::class,'restore']);
     Route::delete('/deleteArchive/{id}',[CustomFieldController::class,'deleteArchive']);
 
+});
+
+//pervclrnts
+Route::group(['prefix'=>'previousClients','as'=>'previousClients'],function(){
+    //select all
+    Route::get('/',[PreviousClientsController::class,'all']);
+    //show
+    Route::get('/show/{id}',[PreviousClientsController::class,'show']);
+    //create
+    Route::post('/',[PreviousClientsController::class,'create']);
+    //update
+    Route::put('/{id}',[PreviousClientsController::class,'update']);
+    // soft delete
+    Route::delete('/delete/{id}',[PreviousClientsController::class,'destroy']);
+    Route::get('/archive',[PreviousClientsController::class,'archive']);
+    Route::post('/restore/{id}',[PreviousClientsController::class,'restore']);
+    Route::delete('/deleteArchive/{id}',[PreviousClientsController::class,'deleteArchive']);
+     //search
+     Route::get('/search/{key}',[PreviousClientsController::class,'search']);
+});
+
+Route::group(['prefix'=>'reviews','as'=>'reviews.'],function(){
+    //select all
+    Route::get('/',[ReviewController::class,'all']);
+    //show
+    Route::get('/show/{id}',[ReviewController::class,'show']);
+    //create
+    Route::post('/',[ReviewController::class,'create']);
+    //update
+    Route::put('/{id}',[ReviewController::class,'update']);
+    // soft delete
+    Route::delete('/delete/{id}',[ReviewController::class,'destroy']);
+    Route::get('/archive',[ReviewController::class,'archive']);
+    Route::post('/restore/{id}',[ReviewController::class,'restore']);
+    Route::delete('/deleteArchive/{id}',[ReviewController::class,'deleteArchive']);
+     //search
+     Route::get('/search/{key}',[ReviewController::class,'search']);
+});
+
+Route::group(['prefix'=>'services','as'=>'services.'],function(){
+    //select all
+    Route::get('/',[ServiceController::class,'all']);
+    //show
+    Route::get('/show/{id}',[ServiceController::class,'show']);
+    //create
+    Route::post('/',[ServiceController::class,'create']);
+    //update
+    Route::put('/{id}',[ServiceController::class,'update']);
+    // soft delete
+    Route::delete('/delete/{id}',[ServiceController::class,'destroy']);
+    Route::get('/archive',[ServiceController::class,'archive']);
+    Route::post('/restore/{id}',[ServiceController::class,'restore']);
+    Route::delete('/deleteArchive/{id}',[ServiceController::class,'deleteArchive']);
+     //search
+     Route::get('/search/{key}',[ServiceController::class,'search']);
+});
+Route::group(['prefix'=>'about','as'=>'about.'],function(){
+    //select all
+    Route::get('/',[AboutUsController::class,'all']);
+    //show
+    Route::get('/show/{id}',[AboutUsController::class,'show']);
+    //create
+    Route::post('/',[AboutUsController::class,'create']);
+    //update
+    Route::put('/{id}',[AboutUsController::class,'update']);
+    // soft delete
+    Route::delete('/delete/{id}',[AboutUsController::class,'destroy']);
+    Route::get('/archive',[AboutUsController::class,'archive']);
+    Route::post('/restore/{id}',[AboutUsController::class,'restore']);
+    Route::delete('/deleteArchive/{id}',[AboutUsController::class,'deleteArchive']);
+     //search
+     Route::get('/search/{key}',[AboutUsController::class,'search']);
 });

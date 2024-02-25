@@ -115,7 +115,7 @@ class CountryController extends Controller
     public function archive()
     {
 
-        $countries = Country::onlyTrashed()->get();
+        $countries = Country::onlyTrashed()->orderBy('created_at', 'DESC')->get();
 
         return response()->json([
             'countries' => $countries

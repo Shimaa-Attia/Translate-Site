@@ -108,7 +108,7 @@ class LanguageController extends Controller
     public function archive()
     {
 
-        $languaegs = Language::onlyTrashed()->get();
+        $languaegs = Language::onlyTrashed()->orderBy('created_at', 'DESC')->get();
 
         return response()->json([
             'languages' => $languaegs

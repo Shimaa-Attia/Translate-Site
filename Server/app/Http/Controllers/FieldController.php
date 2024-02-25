@@ -115,7 +115,7 @@ class FieldController extends Controller
     public function archive()
     {
 
-        $fields = Field::onlyTrashed()->get();
+        $fields = Field::onlyTrashed()->orderBy('created_at', 'DESC')->get();
 
         return response()->json([
             'topics' => FieldResource::collection( $fields)

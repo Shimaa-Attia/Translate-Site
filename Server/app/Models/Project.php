@@ -25,7 +25,9 @@ class Project extends Model
         'notes',
         'package_id',
         'selectedDeliveryDate',
-        'review'
+        'review',
+        'priceInClientCurrency',
+        'clientCurrency'
     ];
 
     public function country(){

@@ -1,0 +1,112 @@
+ public function getCurrencyFromPosition($position='EG' ){
+        // // Step 1: Fetch country data from REST Countries API
+        // $countryResponse = file_get_contents('https://restcountries.com/v3.1/all');
+        // $countryData = json_decode($countryResponse, true);
+
+        // // Step 2: Extract country codes
+        // $countryCodes = [];
+        // foreach ($countryData as $country) {
+        //     $countryCodes[] = $country['cca2'];
+        // }
+
+        // // Step 3: Fetch currency data from Open Exchange Rates API
+        // $currencyResponse = file_get_contents('https://openexchangerates.org/api/currencies.json');
+        // $currencyData = json_decode($currencyResponse, true);
+
+        // // Step 4: Extract currency codes
+        // $currencyCodes = array_keys($currencyData);
+
+        // // Step 5: Combine country codes and currency codes
+        // $result = [];
+        // foreach ($countryCodes as $index => $countryCode) {
+        //     $result[] = [
+        //         'country_code' => $countryCode,
+        //         'currency_code' => $currencyCodes[$index] ?? null // Adjust index as needed
+        //     ];
+        // }
+
+        // Step 1: Fetch country data from REST Countries API
+        $countryResponse = file_get_contents('https://restcountries.com/v3.1/all');
+        $countryData = json_decode($countryResponse, true);
+
+        // Step 2: Fetch currency data from Open Exchange Rates API
+        $currencyResponse = file_get_contents('https://openexchangerates.org/api/currencies.json');
+        $currencyData = json_decode($currencyResponse, true);
+
+        // Step 3: Iterate over country data and find corresponding currency code
+        $result = [];
+        foreach ($countryData as $country) {
+            $countryCode = $country['cca2'];
+            $countryName = $country['name']['common'];
+
+            // Try to find currency code based on country name
+            $currencyCode = null;
+            foreach ($currencyData as $code => $currencyName) {
+                if (strpos(strtolower($currencyName), strtolower($countryName)) !== false) {
+                    $currencyCode = $code;
+                    break;
+                }
+            }
+
+            // Add country and currency code to result array
+            $result[] = [
+                'country_code' => $countryCode,
+                'currency_code' => $currencyCode
+            ];
+        }
+
+        // Output the result
+        // echo json_encode($result, JSON_PRETTY_PRINT);
+
+
+        // foreach ($result as $item){
+        //     if($item['country_code'] == $position){
+        //         return $item['currency_code'];
+        //     }
+        // }
+// return $result;
+
+        // // Build dynamic mapping based on API response
+        $countryToCurrency = [];
+        foreach ($result as $item) {
+            $countryToCurrency[$item['country_code']] = $item['currency_code'];
+        }
+return $countryToCurrency;
+        // // Retrieve currency code based on the provided country code
+        // if (isset($countryToCurrency[$position])) {
+        //     return $countryToCurrency[$position];
+        // } else {
+        //     // Default to a fallback currency if the country code is not mapped
+        //     return 'USD'; // Default to US dollars
+        // }
+
+
+        // [
+        //     {
+        //     "country_code":"US",
+        //     "currency_code":"USD"
+        //       },
+        //     "country_code":"GB",
+        //     "currency_code":"GBP"
+        //       },
+        //     "country_code":"FR",
+        //     "currency_code":"EUR"
+        //       },
+
+        //   ]
+        // $positionToCurrency = [
+        //     'US' => 'USD',
+        //     'GB' => 'GBP',
+        //     'FR' => 'EUR',
+        //     'EG'=>'EGP'
+        //     // Add more mappings as needed
+        // ];
+
+        // Assume $position is the user's position (e.g., country code)
+        // if (isset($positionToCurrency[$position])) {
+        //     return $positionToCurrency[$position];
+        // } else {
+        //     // Default to a fallback currency if the position is not mapped
+        //     return 'USD'; // Default to US dollars
+        // }
+    }
