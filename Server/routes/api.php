@@ -206,14 +206,14 @@ Route::group(['prefix'=>'packages','as'=>'packages.'],function(){
      Route::get('/search/{key}',[PackageController::class,'search']);
 });
 
-//projectStatus ,  description ,///مش هينفع aboutUs , ourServices
+//projectStatus ,  homeDescription ,///مش هينفع aboutUs , ourServices
 Route::group(['prefix'=>'customFields','as'=>'customFields.'],function(){
     //getCustomList
     Route::get('/getCustomList/{type}',[CustomFieldController::class,'getCustomList']);
     //select one
     Route::get('/show/{id}',[CustomFieldController::class,'show']);
-     //create
-     Route::post('/{type}',[CustomFieldController::class,'create']);
+    //create
+    Route::post('/{type}',[CustomFieldController::class,'create']);
     //update
     Route::put('{/{id}',[CustomFieldController::class,'update']);
     //soft delete
@@ -257,11 +257,11 @@ Route::group(['prefix'=>'reviews','as'=>'reviews.'],function(){
     Route::get('/archive',[ReviewController::class,'archive']);
     Route::post('/restore/{id}',[ReviewController::class,'restore']);
     Route::delete('/deleteArchive/{id}',[ReviewController::class,'deleteArchive']);
-     //search
-     Route::get('/search/{key}',[ReviewController::class,'search']);
+    //search
+    Route::get('/search/{key}',[ReviewController::class,'search']);
 });
 
-Route::group(['prefix'=>'services','as'=>'services.'],function(){
+Route::group(['prefix'=>'services','as'=>'services'],function(){
     //select all
     Route::get('/',[ServiceController::class,'all']);
     //show
@@ -278,7 +278,7 @@ Route::group(['prefix'=>'services','as'=>'services.'],function(){
      //search
      Route::get('/search/{key}',[ServiceController::class,'search']);
 });
-Route::group(['prefix'=>'about','as'=>'about.'],function(){
+Route::group(['prefix'=>'about','as'=>'about'],function(){
     //select all
     Route::get('/',[AboutUsController::class,'all']);
     //show
