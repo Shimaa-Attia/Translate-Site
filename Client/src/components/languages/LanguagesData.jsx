@@ -1,7 +1,7 @@
 "use client"
 import axios from "axios";
 import Joi from "joi";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 export function LanguagesData() {
   // getting languages 
@@ -25,7 +25,8 @@ export function LanguagesData() {
   useEffect(() => {
     getLanguagesData()
   }, [searchText])
-  //edit language 
+  //edit language
+  const formRef = useRef(null); 
   let [isOpen, setIsOpen] = useState(false);
   let [languageId, setLanguageId] = useState('');
   let [languages, setLanguages] = useState({
@@ -41,15 +42,20 @@ export function LanguagesData() {
       if (data) {
         setOneLanguage(data);
         setLanguages({
-          name: data?.name,
-          code: data?.code,
-          price: data?.price
+          name: data?.name ||'',
+          code: data?.code ||'',
+          price: data?.price ||''
         })
       }
     } catch (error) {
       toast.error('Something went wrong.')
     }
   }
+  useEffect(() => {
+    if (languageId) {
+        getOneLanguage(languageId)
+    }
+}, [languageId])
   let getInputValue = (event) => {
     let myLanguages = { ...languages };
     myLanguages[event?.target?.name] = event?.target?.value;
@@ -59,6 +65,14 @@ export function LanguagesData() {
     await axios.put(`http://127.0.0.1:8000/api/languages/${langId}`, languages).then((res) => {
       toast.success(res?.data?.message);
       getLanguagesData()
+      setLanguages({
+        name: '',
+        code:'',
+        price: ''
+    });
+    setLanguageId('')
+    formRef.current.reset()
+    setIsOpen(false)
     }).catch((errors) => {
       const errorList = errors?.response?.data?.message;
       if (errorList !== undefined) {
@@ -117,7 +131,6 @@ export function LanguagesData() {
                   <p>{lang.price}$</p>
                   <div className='text-gray-600 cursor-pointer' onClick={() => {
                     setLanguageId(lang.id)
-                    getOneLanguage(lang.id)
                     setIsOpen(true)
                   }}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -132,16 +145,16 @@ export function LanguagesData() {
           </div>}
       </div>
       {/* edit modal  */}
-      <div className={`fixed  inset-0 w-full bg-gray-900 bg-opacity-50 ${isOpen ? '' : 'hidden'}`}>
+      <div className={`fixed z-40 inset-0 w-full bg-gray-900 bg-opacity-50 ${isOpen ? '' : 'hidden'}`}>
         <div className="flex items-center justify-center min-h-screen">
-          <div className=" relative bg-white p-8 rounded shadow-lg">
+          <div className="w-2/4 relative bg-white p-8 rounded shadow-lg">
             <div className="absolute top-4 right-4 cursor-pointer " onClick={() => { setIsOpen(false) }}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
             </div>
             <div className="pt-6">
-              <form onSubmit={submitEditedLanuageForm} >
+              <form ref={formRef} onSubmit={submitEditedLanuageForm} >
                 <div>
                   <label htmlFor="name"
                     className="block text-sm font-semibold text-gray-800"

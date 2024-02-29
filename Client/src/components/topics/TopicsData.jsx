@@ -1,7 +1,7 @@
 "use client"
 import axios from "axios";
 import Joi from "joi";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 export function TopicsData() {
     // getting topics 
@@ -20,28 +20,35 @@ export function TopicsData() {
         getTopicsData()
     }, [])
     //edit topic
+    const formRef = useRef(null);
     let [isOpen, setIsOpen] = useState(false);
     let [topicId, setTopicId] = useState('');
     let [topics, setTopics] = useState({
         name: '',
         price: ''
     });
-    //getting data for one country 
+    //getting data for one topic 
     let [oneTopic, setOneTopic] = useState([]);
     let getOneTopic = async (topId) => {
         try {
             let { data } = await axios.get(`http://127.0.0.1:8000/api/fields/show/${topId}`)
-            if (data) {
+            if (data ) {
                 setOneTopic(data.data);
                 setTopics({
-                    name: data?.data?.name,
-                    price: data?.data?.price
+                    name: data?.data?.name ||'',
+                    price: data?.data?.price ||''
                 })
             }
         } catch (error) {
             toast.error('Something went wrong.')
         }
     }
+    useEffect(() => {
+        if (topicId) {
+            getOneTopic(topicId)
+        }
+    }, [topicId])
+
     let getInputValue = (event) => {
         let myTopics = { ...topics };
         myTopics[event?.target?.name] = event?.target?.value;
@@ -51,22 +58,34 @@ export function TopicsData() {
         await axios.put(`http://127.0.0.1:8000/api/fields/${topId}`, topics).then((res) => {
             toast.success(res?.data?.message);
             getTopicsData();
+            setTopics({
+                name: '',
+                price: ''
+            });
+            setTopicId('')
+            formRef.current.reset()
+            setIsOpen(false)
         }).catch((errors) => {
             const errorList = errors?.response?.data?.message;
-            if (errorList !== undefined) {
-                Object.keys(errorList)?.map((err) => {
-                    errorList[err]?.map((err) => {
-                        toast.error(err)
-                    })
-                });
-            } else {
+            try {
+                if (errorList !== undefined) {
+                    Object.keys(errorList)?.map((err) => {
+                        errorList[err]?.map((err) => {
+                            toast.error(err)
+                        })
+                    });
+                } else {
+                    toast.error('Something went wrong.')
+                }
+            } catch (error) {
                 toast.error('Something went wrong.')
             }
+       
         })
     }
     let validateEditedTopicForm = () => {
         const schema = Joi.object({
-            name: Joi.string().required(),
+            name: Joi.string().empty(null),
             price: Joi.number().empty(null),
         });
         return schema.validate(topics, { abortEarly: false });
@@ -76,7 +95,7 @@ export function TopicsData() {
         let validation = validateEditedTopicForm();
         if (!validation?.error) {
             sendingEditedTopicDataToApi(topicId);
-            setTopics({ name: '', price: '' });
+            
 
         } else {
             try {
@@ -98,7 +117,6 @@ export function TopicsData() {
                             <p>{top?.price}$</p>
                             <div className='text-gray-600 cursor-pointer' onClick={() => {
                                 setTopicId(top.id)
-                                getOneTopic(top.id)
                                 setIsOpen(true)
                             }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -109,6 +127,12 @@ export function TopicsData() {
                     ))}
                 </div>
             )
+        } else {
+            return (
+                <>
+                    <span>Loading...</span>
+                </>
+            )
         }
     }
     return (
@@ -116,16 +140,16 @@ export function TopicsData() {
             <div>
                 {showTopics()}
                 {/* edit modal */}
-                <div className={`fixed  inset-0 w-full bg-gray-900 bg-opacity-50 ${isOpen ? '' : 'hidden'}`}>
+                <div className={`fixed z-40 inset-0 w-full bg-gray-900 bg-opacity-50 ${isOpen ? '' : 'hidden'}`}>
                     <div className="flex items-center justify-center min-h-screen">
-                        <div className=" relative bg-white p-8 rounded shadow-lg">
+                        <div className="w-2/4 relative bg-white p-8 rounded shadow-lg">
                             <div className="absolute top-4 right-4 cursor-pointer " onClick={() => { setIsOpen(false) }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
                             </div>
                             <div className="pt-6">
-                                <form onSubmit={submitEditedTopicForm} >
+                                <form ref={formRef} onSubmit={submitEditedTopicForm} >
                                     <div>
                                         <label htmlFor="name"
                                             className="block text-sm font-semibold text-gray-800"

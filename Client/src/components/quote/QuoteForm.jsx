@@ -8,6 +8,7 @@ import Joi from 'joi';
 const DynamicSelect = dynamic(() => import('react-select'), { ssr: false });
 
 export default function QuoteForm() {
+  let [isOpen, setIsOpen] = useState(false);
   let [isLoading, setIsLoading] = useState(false);
   let [project, setProject] = useState({
     feild_name: '',
@@ -118,9 +119,10 @@ export default function QuoteForm() {
     project.attachments.forEach((file, index) => {
       projectData.append(`attachments[${index}]`, file);
     });
-    setIsLoading(true)
+  
     await axios.post(`http://127.0.0.1:8000/api/projects`, projectData).then((res) => {
       console.log(res);
+      setIsLoading(false)
       localStorage.setItem('projectId', res.data.project_id)
       setPackagesData(res.data.packages)
       toast.success(res?.data?.message);
@@ -131,7 +133,6 @@ export default function QuoteForm() {
       const errorList = errors?.response?.data?.message;
       if (errorList !== undefined) {
         Object.keys(errorList)?.map((err) => {
-          console.log(err);
           errorList[err]?.map((err) => {
             toast.error('Something went wrong.')
           })
@@ -145,7 +146,7 @@ export default function QuoteForm() {
     const schema = Joi.object({
       feild_name: Joi.string().required(),
       from_language: Joi.string().required(),
-      to_languages: Joi.string().required(),
+      to_languages: Joi.any().required(),
       attachments: Joi.any().required(),
       numOfWords: Joi.number().required(),
       client_email: Joi.any().required()
@@ -153,12 +154,14 @@ export default function QuoteForm() {
     return schema.validate(project, { abortEarly: false });
   };
   let submitProjectForm = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     // sendingProjectDataToApi()
     let validation = validateProjectForm();
     if (!validation?.error) {
       sendingProjectDataToApi();
     } else {
+      setIsLoading(false)
       try {
         console.log(validation);
         validation?.error?.details?.map((err) => {
@@ -176,7 +179,6 @@ export default function QuoteForm() {
     <>
       <div className='bg-gray-200 container py-8 shadow-lg m-auto' >
         {errorMsg.length > 0 ? <div className='bg-red-400'>{errorMsg}</div> : ''}
-
         <form onSubmit={submitProjectForm} >
           <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-3 w-[90%]  m-auto'>
             <div>
@@ -273,8 +275,8 @@ export default function QuoteForm() {
             </div>
           </div>
         </form>
+        {/* packages data */}
         <div>
-
           {packagesData.length > 0 &&
             <div>
               {packagesData.length > 0 ? (
@@ -286,7 +288,12 @@ export default function QuoteForm() {
                       <p className=''>{pack?.package_desc}</p>
                       <p className='text-sm mt-14 text-gray-500'>delivery guaranteed by</p>
                       <p className='font-medium'>{pack?.deliveryDate}</p>
-                      <p className='text-sm text-gray-500'>Need it faster?</p>
+                      <p className='text-sm text-gray-500 underline cursor-pointer' onClick={()=>{
+                        setIsOpen(true)
+                        localStorage.setItem("packageId", pack.package_id)
+                        localStorage.setItem("packagePrice", pack.price)
+                        localStorage.setItem("packageDate", pack.deliveryDate)
+                        }} >Need it faster?</p>
                       <p className='text-2xl  font-semibold my-6'>${pack?.price}</p>
                       <button className='bg-blue-800 text-gray-200 py-2 w-1/2 rounded' onClick={() => {
                         localStorage.setItem("packageId", pack.package_id)
@@ -302,6 +309,33 @@ export default function QuoteForm() {
               ) : ''}
             </div>
           }
+        </div>
+      </div>
+      {/* date modal */}
+      <div className={`fixed  inset-0 w-full bg-gray-900 bg-opacity-50 ${isOpen ? '' : 'hidden'}`}>
+        <div className="flex items-center justify-center   min-h-screen">
+          <div className=" bg-white w-[400px] pt-4 px-8 pb-10 rounded shadow-lg">
+            <div className=" cursor-pointer float-end " onClick={() => { setIsOpen(false) }}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </div> 
+            <p className=' clear-end'></p>
+            <div className="pt-6">
+            <p className='mb-10 font-bold'>Select the delivery date</p>
+              <form>
+                <div>
+                  <input
+                    name="DateFaster"
+                    type="date"
+                    // onChange={getInputValue}
+                    className="px-4 w-full py-2 my-1 text-gray-700 bg-white border rounded-md  focus:outline-none"
+                  />
+                </div>
+                <button type='submit' className="w-full py-2 mt-2  text-white  bg-blue-700 rounded-md " >Done</button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </>

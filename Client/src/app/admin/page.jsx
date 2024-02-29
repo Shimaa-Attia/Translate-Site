@@ -1,8 +1,9 @@
+import Login from "@/components/adminDashboard/Login";
 
-export default function AdminHome() {
+export default function AdminLogin() {
   return (
  <>
-<h2>admin home</h2>
+{/* <Login/> */}
 
  </>
   );
