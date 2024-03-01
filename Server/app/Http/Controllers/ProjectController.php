@@ -159,7 +159,7 @@ class ProjectController extends Controller
             'deliveryDate'=>$date
           ];
        }
-       return $offers;
+    //    return $offers;
 
         // DB::transaction(function () use ($request,$client,$field,$country) {
 
