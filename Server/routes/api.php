@@ -215,7 +215,7 @@ Route::group(['prefix'=>'customFields','as'=>'customFields.'],function(){
     //create
     Route::post('/{type}',[CustomFieldController::class,'create']);
     //update
-    Route::put('{/{id}',[CustomFieldController::class,'update']);
+    Route::put('/{id}',[CustomFieldController::class,'update']);
     //soft delete
     Route::delete('/delete/{id}',[CustomFieldController::class,'destroy']);
     Route::get('{type}/archive/',[CustomFieldController::class,'archive']);
