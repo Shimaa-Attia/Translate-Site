@@ -270,7 +270,7 @@ class ProjectController extends Controller
     public function completeInfo(Request $request){
         $validator = Validator::make($request->all(), [  //|date_format:Y-m-d H:i A
             'name'=>'required|string',
-            'deliveryDate'=>'required|after:' . date(DATE_ATOM, time() + (5 * 60 * 60)),
+            'deliveryDate'=>'required|',//after:' . date(DATE_ATOM, time() + (5 * 60 * 60)),
             "package_id"=>'required|exists:packages,id',
             "project_id"=>'required|exists:projects,id',
             'price'=>'required|numeric',

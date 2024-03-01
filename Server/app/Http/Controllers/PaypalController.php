@@ -8,6 +8,7 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Prompts\Prompt;
 // use Srmklive\PayPal\Facades\PayPal;
 use Srmklive\PayPal\Services\ExpressCheckout;
 class PaypalController extends Controller
@@ -81,8 +82,18 @@ class PaypalController extends Controller
             ]);
              $email= $payment->project->client->email;
             //  return $email;
+            $project =Project::where('id',$payment->project_id)->first();
+            $dataArray = [
+                'project_name' => $project->name,
+                'price' => $project->priceInClientCurrency." ".$project->clientCurrency,
+                'files'=>$project->files,
+                'numOf_files'=>count($project->files),
+                'Delivery_data'=>$project->selectedDeliveryDate,
+
+                // Add more variables as needed
+            ];
             Mail::to($email)
-            ->send( new confirmMail());
+            ->send( new confirmMail($dataArray));
             return response()->json([
              "message"=>"Payment was successfull and your project has been received please check your mail!"
             ]);
