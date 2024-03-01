@@ -2,7 +2,7 @@
 "use client"
 import axios from 'axios';
 import Joi from 'joi';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner';
 
 export default function HomeData() {
@@ -22,21 +22,21 @@ export default function HomeData() {
         getHomeData()
     }, [])
       //edit home data
+      const formRef = useRef(null);
       let [isOpen, setIsOpen] = useState(false);
       let [homeId, setHomeId] = useState('');
       let [homeDesc, setHomeDesc] = useState({
-          desc: ''
+          name: ''
       });
         //getting data for one homeDesc 
     let [onehomeDesc, setOnehomeDesc] = useState([]);
     let getOneHomeDesc = async (homeId) => {
         try {
             let { data } = await axios.get(`http://127.0.0.1:8000/api/customFields/show/${homeId}`)
-            console.log(data);
             if (data) {
-                setOnehomeDesc(data);
+                setOnehomeDesc(data.data);
                 setHomeDesc({
-                    desc: data?.data?.desc
+                    name: data?.data?.name
                 })
             }
         } catch (error) {
@@ -51,13 +51,21 @@ export default function HomeData() {
     let getInputValue = (event) => {
       let myHomeDesc = { ...homeDesc };
       myHomeDesc[event?.target?.name] = event?.target?.value;
+     
       setHomeDesc(myHomeDesc);
   }
   let sendingEditedHomeDataToApi = async (homeId) => {
       await axios.put(`http://127.0.0.1:8000/api/customFields/${homeId}`, homeDesc).then((res) => {
           toast.success(res?.data?.message);
           getHomeData();
+          setHomeDesc({
+            name: '',
+        });
+        setHomeId('')
+        formRef.current.reset()
+        setIsOpen(false)
       }).catch((errors) => {
+        console.log(errors);
           const errorList = errors?.response?.data?.message;
           try {
             if (errorList !== undefined) {
@@ -77,7 +85,7 @@ export default function HomeData() {
   }
   let validateEditedHomeForm = () => {
       const schema = Joi.object({
-          desc: Joi.string().empty(''),
+          name: Joi.string().empty(''),
       });
       return schema.validate(homeDesc, { abortEarly: false });
   };
@@ -86,7 +94,7 @@ export default function HomeData() {
       let validation = validateEditedHomeForm();
       if (!validation?.error) {
           sendingEditedHomeDataToApi(homeId);
-          setHomeDesc({  desc: '' });
+         
 
       } else {
           try {
@@ -141,16 +149,16 @@ export default function HomeData() {
                                 </svg>
                             </div>
                             <div className="pt-6">
-                                <form onSubmit={submitEditedHomeForm} >
+                                <form ref={formRef} onSubmit={submitEditedHomeForm} >
                                     <div>
-                                        <label htmlFor="desc"
+                                        <label htmlFor="name"
                                             className="block text-sm font-semibold text-gray-800"
                                         >Description</label>
                                         <input
-                                            name="desc"
+                                            name="name"
                                             type="text"
                                             onChange={getInputValue}
-                                            defaultValue={onehomeDesc?.desc}
+                                            defaultValue={onehomeDesc?.name}
                                             className="px-4 w-full py-2 my-2 text-gray-700 bg-white border rounded-md  focus:outline-none"
                                         />
                                     </div>
