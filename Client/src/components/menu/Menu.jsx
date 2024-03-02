@@ -33,7 +33,7 @@ export default function Menu() {
                 {open && (
                     <>
                         <div className='fixed mt-20 inset-0 bg-white bg-opacity-70 z-10'></div>
-                        <div className='bg-blue-900 fixed right-0 top-20 h-[calc(100vh-5rem)] flex flex-col gap-4 z-20  w-[50%] pt-10 ps-4'>
+                        <div className='bg-blue-900 fixed right-0 top-20 h-[calc(100vh-5rem)] flex flex-col gap-4 z-20  w-[60%] pt-10 ps-4'>
                             {links.map((item) => (
                                 <Link href={item.url} key={item.id} onClick={() => { setOpen(false) }} >
                                     {item.title}</Link>

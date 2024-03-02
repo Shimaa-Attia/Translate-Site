@@ -111,7 +111,7 @@ export default function HomeData() {
         return (
             <div>
                 {homeData?.map((desc , index) => (
-                    <div key={index} className="bg-gray-300  rounded p-1     mt-3">
+                    <div key={index} className="bg-gray-300  rounded p-1     mt-8">
                         <p>{desc?.name}</p>
                         <div className='text-gray-600 cursor-pointer' onClick={() => {
                             setHomeId(desc.id)
@@ -154,7 +154,7 @@ export default function HomeData() {
                                         <label htmlFor="name"
                                             className="block text-sm font-semibold text-gray-800"
                                         >Description</label>
-                                        <input
+                                        <textarea
                                             name="name"
                                             type="text"
                                             onChange={getInputValue}
