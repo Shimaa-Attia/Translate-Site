@@ -21,7 +21,7 @@ class ReviewResource extends JsonResource
         }
         return[
             'id'=>$this->id,
-            "body"=>$this->name,
+            "body"=>$this->body,
             "clientName"=>$this->name,
             "clientTitle"=>$this->clientTitle,
             "image"=>$path,
