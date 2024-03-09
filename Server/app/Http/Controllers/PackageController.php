@@ -30,6 +30,7 @@ class PackageController extends Controller
             'increasePercentage'=> 'numeric|required',
             'word_unite'=>'numeric|required',
             'expected_numOfDays'=>'numeric|required',
+            'offer'=>'numeric|nullable',
             'description'=>'nullable|string'
         ]);
 
@@ -44,6 +45,7 @@ class PackageController extends Controller
             "increasePercentage" => $request->increasePercentage,
             "description"=>$request->description,
             "word_unite"=>$request->word_unite,
+            "offer"=>$request->offer,
             "expected_numOfDays"=>$request->expected_numOfDays
 
         ]);
@@ -69,6 +71,7 @@ class PackageController extends Controller
             'increasePercentage'=> 'numeric|required',
             'word_unite'=>'numeric|required',
             'expected_numOfDays'=>'numeric|required',
+            'offer'=>'numeric|nullable',
             'description'=>'nullable|string'
         ]);
         if ($validator->fails()) {
@@ -84,6 +87,7 @@ class PackageController extends Controller
                 "increasePercentage" => $request->increasePercentage,
                 "description"=>$request->description,
                 "word_unite"=>$request->word_unite,
+                "offer"=>$request->offer,
                 "expected_numOfDays"=>$request->expected_numOfDays
 
             ]);
