@@ -15,19 +15,20 @@ class Project extends Model
     ];
     protected $fillable = [
         'name',
+        'type',
         'client_id',
         'country_id',
         'field_id',
         'status_id',
         'from_language',
-        'numOfWords',
+        'numOfWordsOrHours',
         'price',
         'notes',
         'package_id',
         'selectedDeliveryDate',
-        'review',
         'priceInClientCurrency',
-        'clientCurrency'
+        'clientCurrency',
+        'packageOffer'
     ];
 
     public function country(){

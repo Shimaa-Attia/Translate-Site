@@ -87,16 +87,4 @@ class PositionController extends Controller
 
     }
 
-    // public function mail(){
-    //     Mail::to('hajermuhammad823@gmail.com')
-    //      ->send( new confirmMail());
-    //      return response()->json([
-    //      "message"=>"mail sent!"
-    //   ]);
-    // }
-
-    public function lang($lang = null){
-        App::setLocale($lang);
-      return   __('messages.welcom');
-    }
 }

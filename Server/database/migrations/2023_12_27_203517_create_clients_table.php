@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone')->unique()->nullable();
             $table->string('email')->unique();
-            $table->text('review')->nullable();
             $table->bigInteger('country_id',false,true);
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->timestamps();

@@ -14,7 +14,8 @@ class Package extends Model
        'increasePercentage',
        'description',
        'word_unite',
-       'expected_numOfDays'
+       'expected_numOfDays',
+       'offer'
     ];
 
     public function projects(){

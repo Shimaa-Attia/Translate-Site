@@ -14,7 +14,6 @@ class Client extends Model
         'name',
         'phone',
         'email',
-        'review',
         'country_id'
     ];
     public function country(){

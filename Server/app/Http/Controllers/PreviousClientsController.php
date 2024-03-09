@@ -35,6 +35,7 @@ class PreviousClientsController extends Controller
             "clientLogo"=>'nullable|image|mimes:png,jpg,jpeg,gif,webp',
 
         ]);
+        
         if ($validator->fails()) {
             return response()->json([
                 "message" => $validator->errors()],409);

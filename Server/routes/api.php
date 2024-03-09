@@ -167,8 +167,16 @@ Route::group(['prefix'=>'projects','as'=>'projects.'],function(){
     Route::get('/',[ProjectController::class,'all']);
     //show
     Route::get('/show/{id}',[ProjectController::class,'show']);
-    //create
-    Route::post('/',[ProjectController::class,'create']);
+    //calculatePrice
+    Route::post('/',[ProjectController::class,'calculatePrice']);
+    //interprettercalculatePrice
+    Route::post('/intrepretterPrice',[ProjectController::class,'intrepretterCalculatePrice']);
+    //FasterDeliveryDate
+    Route::post('/FasterDeliveryDate',[ProjectController::class,'FasterDeliveryDate']);
+    //completeInfo (create project & create or update client)
+    Route::post('/completeInfo',[ProjectController::class,'completeInfo']);
+    //interprettercompleteInfo (create project & create or update client)
+    Route::post('/interprettercompleteInfo',[ProjectController::class,'interprettercompleteInfo']);
     //update
     Route::put('/{id}',[ProjectController::class,'update']);
     // soft delete
@@ -180,12 +188,6 @@ Route::group(['prefix'=>'projects','as'=>'projects.'],function(){
     Route::get('/search/{key}',[ProjectController::class,'search']);
     //update status
     Route::put('/updateStatus/{id}',[ProjectController::class,'updateStatus']);
-    //setReview
-    Route::put('/setReview/{id}',[ProjectController::class,'setReview']);
-    //FasterDeliveryDate
-    Route::post('/FasterDeliveryDate',[ProjectController::class,'FasterDeliveryDate']);
-    //completeInfo
-    Route::post('/completeInfo',[ProjectController::class,'completeInfo']);
 });
 
 Route::group(['prefix'=>'packages','as'=>'packages.'],function(){

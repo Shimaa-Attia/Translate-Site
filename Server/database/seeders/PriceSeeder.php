@@ -15,10 +15,9 @@ class PriceSeeder extends Seeder
     {
 
         $array =[
-            ['type'=>'countries', 'price'=>50],
-            ['type'=>'languages', 'price'=>30],
-            ['type'=>'fields', 'price'=>40],
             ['type'=>'250Word', 'price'=>20],
+            ['type'=>'hour', 'price'=>50],
+            ['type'=>'dayFaster', 'price'=>5],
 
 
         ];

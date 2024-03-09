@@ -27,12 +27,13 @@ class PaypalController extends Controller
         $data['items']=[
             [
                 'name'=>$project->name,
-                "numOfWords"=>$project->numOfWords,
-                "topic"=>$project->field->name,
+                // "numOfWords"=>$project->numOfWordsOrHours,
+                // "topic"=>$project->field->name,
                 "price"=>$project->priceInClientCurrency,
                 "currency"=>$project->clientCurrency
             ]
         ];
+        putenv("PAYPAL_CURRENCY=$project->clientCurrency");
         $payment = Payment::create([
             'project_id'=>$project->id,
             'amount'=>$project->price
@@ -83,15 +84,18 @@ class PaypalController extends Controller
              $email= $payment->project->client->email;
             //  return $email;
             $project =Project::where('id',$payment->project_id)->first();
-            $dataArray = [
-                'project_name' => $project->name,
-                'price' => $project->priceInClientCurrency." ".$project->clientCurrency,
-                'files'=>$project->files,
-                'numOf_files'=>count($project->files),
-                'Delivery_data'=>$project->selectedDeliveryDate,
+            if($project->type =="Normal translation"){
 
-                // Add more variables as needed
-            ];
+                $dataArray = [
+                    'project_name' => $project->name,
+                    'price' => $project->priceInClientCurrency." ".$project->clientCurrency,
+                    'files'=>$project->files,
+                    'numOf_files'=>count($project->files),
+                    // 'Delivery_data'=>$project->selectedDeliveryDate,
+
+                    // Add more variables as needed
+                ];
+            }
             Mail::to($email)
             ->send( new confirmMail($dataArray));
             return response()->json([

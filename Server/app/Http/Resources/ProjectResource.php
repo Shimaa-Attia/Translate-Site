@@ -23,33 +23,33 @@ class ProjectResource extends JsonResource
              'file'=>asset('storage')."/". $file->name
            ];
         }
-       $is_orderd="no";
+       $is_paid="no";
        $payments=$this->payments;
        foreach($payments as $payment){
             if($payment->token !=null & $payment->PayerID !=null){
-                $is_orderd="yes";
+                $is_paid="yes";
             }
         }
         return [
            'id'=>$this->id,
            'name'=>$this->name,
-           'is_orderd'=>$is_orderd,
+           'is_paid'=>$is_paid,
            'notes'=>$this->notes,
            'created_at'=> $this->created_at->format('Y/m/d h:i A'),
            'field'=>$this->field,
            'client'=>$this->client,
            'country'=>$this->country,
-           'numOfWords'=>$this->numOfWords,
+           'numOfWordsOrHours'=>$this->numOfWordsOrHours,
            'package'=>$this->package,
            'price'=>$this->price,
            'priceInClientCurrency'=>$this->priceInClientCurrency,
            'clientCurrency'=>$this->clientCurrency,
+           'packageOffer'=>$this->packageOffer??"No offer",
            'selectedDeliveryDate'=>optional($this->selectedDeliveryDate)->format('Y/m/d h:i A') ,
            'attachments'=> $customForm,
            'status'=>optional($this->status)->name,
            'from_language'=>$this->language,
            'to_languages'=>$this->languages,
-           'review'=>$this->review
         ];
     }
 }
