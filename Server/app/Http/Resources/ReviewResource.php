@@ -22,7 +22,7 @@ class ReviewResource extends JsonResource
         return[
             'id'=>$this->id,
             "body"=>$this->body,
-            "clientName"=>$this->name,
+            "clientName"=>$this->clientName,
             "clientTitle"=>$this->clientTitle,
             "image"=>$path,
             "created_at"=>$this->created_at->format('Y/m/d h:i A')
